@@ -1,89 +1,161 @@
-# Safe or Not (iOS)
+Safe or Not
 
-Safe or Not is a thin, single-purpose iOS app that gives instant guidance on whether a food is safe for pets.
+Safe or Not is a calm, single purpose mobile app that helps pet owners quickly determine whether a food is safe, toxic, or requires veterinary guidance for pets.
 
-This repository contains the **MVP flow only**.
+The app is intentionally minimal and conservative. It prioritizes clarity, trust, and emotional steadiness at moments when users may be uncertain or stressed.
 
----
+Current Version
 
-## What this app does
+v0.4.0
 
-Safe or Not is designed for moments of uncertainty:
+Phase 2 complete: visual polish, motion, and microcopy refinement.
 
-- A pet grabs something off the floor  
-- A child feeds a dog or cat something questionable  
-- An owner needs an answer immediately  
+Core Purpose
 
-The app provides **one clear response**, then gets out of the way.
+Help pet owners answer one question clearly and responsibly:
 
-Open → enter food → get verdict → close.
+Is this food safe for my pet?
 
----
+No dashboards.
+No tracking.
+No gamification.
+No self help tone.
 
-## MVP Scope (current)
+Just a clear answer.
 
-This version focuses on **flow and experience**, not data completeness.
+How It Works
 
-### Included
-- 3-screen onboarding (shown once)
-- Input screen for entering a food
-- Verdict screen
-- Local persistence for onboarding completion
+The user enters a food name
 
-### Not included (by design)
-- No food database yet
-- No real safety logic yet
-- No monetization or paywall
-- No profiles, tracking, history, or settings
-- No backend or external APIs
+The app returns one of three verdicts:
 
-For MVP testing, all inputs currently return **VET FIRST**.
+SAFE
 
-This allows us to validate UX and navigation without locking in premature logic or data models.
+TOXIC
 
----
+VET FIRST
 
-## Design philosophy
+Users can immediately check another food if needed
 
-- Thin over complete  
-- Clear over clever  
-- Calm over emotional  
-- Tool, not wellness app  
+The flow is linear, fast, and interruption free.
 
-The UI is intentionally minimal and stable so future iterations can change **logic underneath** without redesigning screens.
+Data Model
 
----
+Local JSON based dataset
 
-## Planned iteration path
+Conservative classifications only
 
-This project is intended to evolve in phases:
+Unknown or ambiguous foods always default to VET FIRST
 
-1. **Flow MVP** (current)
-2. Local food safety dataset + conservative verdict logic
-3. Expanded coverage and synonym handling
-4. Optional monetization layer (paywall)
-5. Source attribution and trust refinements
+Synonym support and normalized input matching
 
-UI should remain largely unchanged across these phases.
+Tolerant of punctuation, casing, and spacing
 
----
+Species specific coverage where applicable
 
-## Tech notes
+Source attribution included for each food
 
-- Built as a screenshot clone from Figma using RORK
-- No backend dependencies
-- No network calls
-- Simple local state only
+There are no backend calls and no network dependencies.
 
----
+Design Philosophy
+Visual Design
 
-## Status
+Warm modern pet brand aesthetic
 
-🚧 Early MVP  
-Focused on validating flow and interaction before adding data or monetization.
+Off white backgrounds to avoid clinical starkness
 
----
+Soft elevated surfaces for input and actions
 
-## License
+Restrained, accessible verdict colors
 
-TBD
+Strong text contrast and readable typography
+
+No decorative or distracting UI
+
+The design favors calm authority over friendliness or playfulness.
+
+Motion & Interaction
+
+Subtle fade and vertical motion for screen transitions
+
+Motion reinforces continuity, never urgency
+
+Verdicts are revealed with composed pacing
+
+Back navigation feels lighter and dismissive
+
+Centralized motion tokens ensure consistency
+
+No flashy animations. No bounce effects.
+
+Microcopy
+
+Human, reassuring phrasing without changing meaning
+
+CTAs framed as guidance, not commands
+
+Navigation language is contextual
+
+No emotional manipulation or self help framing
+
+Copy is intentionally neutral and trust forward.
+
+Architecture
+
+Built with Expo and expo router
+
+Clean separation of concerns
+
+Centralized design tokens for:
+
+Colors
+
+Typography
+
+Spacing
+
+Radius
+
+Shadows
+
+Motion
+
+No backend
+
+No analytics
+
+No tracking
+
+No notifications
+
+The codebase is stable, readable, and future extensible.
+
+What v0.4.0 Represents
+
+MVP fully functional
+
+Visual identity locked
+
+Motion language established
+
+Microcopy refined
+
+Phase 2 complete
+
+This version serves as a solid long term foundation. Future work can focus on intelligence, dataset expansion, or monetization without reworking core UX or visuals.
+
+Future Directions (Not Implemented)
+
+Expanded food dataset
+
+Veterinary intelligence or LLM integration
+
+Monetization experiments
+
+Regional or species specific guidance
+
+These are intentionally deferred until after validation.
+
+License
+
+Private project. All rights reserved.
