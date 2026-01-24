@@ -1,0 +1,135 @@
+{
+  "version": "0.1.0",
+  "lastUpdated": "2026-01-23",
+  "notes": "Phase 1 MVP dataset. Conservative verdicts. Unknown defaults to VET FIRST.",
+  "foods": [
+    {
+      "id": "chocolate",
+      "canonicalName": "Chocolate",
+      "synonyms": ["cocoa", "dark chocolate", "milk chocolate", "baking chocolate"],
+      "verdict": "TOXIC",
+      "explanation": "Chocolate contains compounds that are toxic to pets.",
+      "action": "Contact a vet immediately.",
+      "species": ["dog", "cat"],
+      "sources": [
+        "ASPCA Poison Control",
+        "Michigan State University Veterinary Diagnostic Laboratory"
+      ]
+    },
+    {
+      "id": "grapes",
+      "canonicalName": "Grapes",
+      "synonyms": ["raisins"],
+      "verdict": "TOXIC",
+      "explanation": "Grapes can cause sudden kidney failure in dogs.",
+      "action": "Contact a vet immediately.",
+      "species": ["dog"],
+      "sources": [
+        "ASPCA Poison Control",
+        "Michigan State University Veterinary Diagnostic Laboratory"
+      ]
+    },
+    {
+      "id": "onions",
+      "canonicalName": "Onions",
+      "synonyms": ["onion powder", "garlic", "leeks", "chives"],
+      "verdict": "TOXIC",
+      "explanation": "Onions and garlic can damage red blood cells in pets.",
+      "action": "Avoid feeding and contact a vet.",
+      "species": ["dog", "cat"],
+      "sources": [
+        "ASPCA Poison Control",
+        "Michigan State University Veterinary Diagnostic Laboratory"
+      ]
+    },
+    {
+      "id": "xylitol",
+      "canonicalName": "Xylitol",
+      "synonyms": ["sugar-free gum", "sugar-free candy"],
+      "verdict": "TOXIC",
+      "explanation": "Xylitol can cause rapid liver failure in dogs.",
+      "action": "Seek veterinary care immediately.",
+      "species": ["dog"],
+      "sources": [
+        "ASPCA Poison Control"
+      ]
+    },
+    {
+      "id": "alcohol",
+      "canonicalName": "Alcohol",
+      "synonyms": ["beer", "wine", "liquor", "spirits"],
+      "verdict": "TOXIC",
+      "explanation": "Alcohol can cause serious poisoning in pets.",
+      "action": "Contact a vet immediately.",
+      "species": ["dog", "cat"],
+      "sources": [
+        "ASPCA Poison Control",
+        "Michigan State University Veterinary Diagnostic Laboratory"
+      ]
+    },
+    {
+      "id": "coffee",
+      "canonicalName": "Coffee",
+      "synonyms": ["caffeine", "espresso", "tea"],
+      "verdict": "TOXIC",
+      "explanation": "Caffeine can cause dangerous heart and nervous system effects.",
+      "action": "Contact a vet immediately.",
+      "species": ["dog", "cat"],
+      "sources": [
+        "ASPCA Poison Control",
+        "Michigan State University Veterinary Diagnostic Laboratory"
+      ]
+    },
+    {
+      "id": "macadamia",
+      "canonicalName": "Macadamia nuts",
+      "synonyms": ["macadamia"],
+      "verdict": "TOXIC",
+      "explanation": "Macadamia nuts can cause weakness and neurological symptoms.",
+      "action": "Seek veterinary advice promptly.",
+      "species": ["dog"],
+      "sources": [
+        "ASPCA Poison Control",
+        "Michigan State University Veterinary Diagnostic Laboratory"
+      ]
+    },
+    {
+      "id": "avocado",
+      "canonicalName": "Avocado",
+      "synonyms": ["guacamole"],
+      "verdict": "VET FIRST",
+      "explanation": "Parts of avocado can be harmful to some pets.",
+      "action": "Contact a vet if ingestion occurs.",
+      "species": ["dog", "cat"],
+      "sources": [
+        "ASPCA Poison Control",
+        "Michigan State University Veterinary Diagnostic Laboratory"
+      ]
+    },
+    {
+      "id": "yeast-dough",
+      "canonicalName": "Raw yeast dough",
+      "synonyms": ["raw dough", "bread dough"],
+      "verdict": "TOXIC",
+      "explanation": "Raw dough can expand and produce alcohol in the stomach.",
+      "action": "Seek veterinary care immediately.",
+      "species": ["dog"],
+      "sources": [
+        "ASPCA Poison Control",
+        "Michigan State University Veterinary Diagnostic Laboratory"
+      ]
+    },
+    {
+      "id": "peanut-butter",
+      "canonicalName": "Peanut butter",
+      "synonyms": ["peanuts"],
+      "verdict": "VET FIRST",
+      "explanation": "Some peanut butter contains xylitol, which is toxic to dogs.",
+      "action": "Check ingredients or contact a vet.",
+      "species": ["dog"],
+      "sources": [
+        "ASPCA Poison Control"
+      ]
+    }
+  ]
+}
