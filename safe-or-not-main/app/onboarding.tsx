@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  Animated,
   View,
   Text,
   StyleSheet,
@@ -10,13 +11,17 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Colors from '@/constants/colors';
+import { Radii, Shadows } from '@/constants/theme';
 import { onboardingData } from '@/constants/onboarding';
+import { useFadeUpMotion } from '@/src/lib/motion';
 
 const ONBOARDING_KEY = 'onboarding_completed';
 
 export default function OnboardingScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const insets = useSafeAreaInsets();
+  const screenMotion = useFadeUpMotion();
+  const contentMotion = useFadeUpMotion([currentIndex]);
 
   const completeOnboarding = async () => {
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
@@ -39,14 +44,16 @@ export default function OnboardingScreen() {
   const isLastScreen = currentIndex === onboardingData.length - 1;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <Animated.View
+      style={[styles.container, { paddingTop: insets.top }, screenMotion.animatedStyle]}
+    >
       <View style={styles.header}>
         <TouchableOpacity onPress={handleSkip} testID="skip-button">
-          <Text style={styles.skipText}>Skip</Text>
+          <Text style={styles.skipText}>Skip for now</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.content}>
+      <Animated.View style={[styles.content, contentMotion.animatedStyle]}>
         <View style={styles.textContainer}>
           <Text style={styles.title}>{currentData.title}</Text>
           <Text style={styles.subtitle}>{currentData.subtitle}</Text>
@@ -63,20 +70,21 @@ export default function OnboardingScreen() {
             />
           ))}
         </View>
-      </View>
+      </Animated.View>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 24 }]}>
         <TouchableOpacity
           style={styles.button}
           onPress={handleNext}
+          activeOpacity={0.88}
           testID="next-button"
         >
           <Text style={styles.buttonText}>
-            {isLastScreen ? 'Continue' : 'Next'}
+            {isLastScreen ? 'Get started' : 'Next'}
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -138,8 +146,9 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: Colors.primary,
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: Radii.button,
     alignItems: 'center',
+    ...(Shadows.button ?? {}),
   },
   buttonText: {
     color: Colors.background,

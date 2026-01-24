@@ -38,8 +38,8 @@ export function foodLookup(input: string): FoodLookupResult {
     return {
       verdict: 'VET FIRST',
       canonicalName: '',
-      explanation: 'Safety information for this food is unclear or varies by preparation.',
-      action: 'Contact your vet before feeding.',
+      explanation: 'Safety can vary by preparation or portion size.',
+      action: 'When unsure, contact your vet first.',
       color: Colors.vetFirst,
     };
   }
@@ -86,8 +86,8 @@ export function foodLookup(input: string): FoodLookupResult {
   return {
     verdict: 'VET FIRST',
     canonicalName: input.trim(), // Use cleaned input for unknown foods
-    explanation: 'Safety information for this food is unclear or varies by preparation.',
-    action: 'Contact your vet before feeding.',
+    explanation: 'Safety can vary by preparation or portion size.',
+    action: 'When unsure, contact your vet first.',
     color: Colors.vetFirst,
   };
 }

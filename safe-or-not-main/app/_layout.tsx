@@ -4,6 +4,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import Colors from '@/constants/colors';
+import { MotionTokens } from '@/src/lib/motion';
+
 const ONBOARDING_KEY = 'onboarding_completed';
 
 SplashScreen.preventAutoHideAsync();
@@ -15,6 +18,8 @@ function RootLayoutNav() {
   useEffect(() => {
     async function checkOnboarding() {
       try {
+
+        await AsyncStorage.removeItem(ONBOARDING_KEY);
         const value = await AsyncStorage.getItem(ONBOARDING_KEY);
         setHasCompletedOnboarding(value === 'true');
       } catch (error) {
@@ -44,7 +49,15 @@ function RootLayoutNav() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        // Calm, continuous transitions (no bounce / no urgency)
+        animation: 'fade',
+        animationDuration: MotionTokens.enterDurationMs,
+        contentStyle: { backgroundColor: Colors.background },
+      }}
+    >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="onboarding" options={{ headerShown: false }} />
       <Stack.Screen name="input" options={{ headerShown: false }} />

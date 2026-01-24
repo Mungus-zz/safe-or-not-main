@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  Animated,
   View,
   Text,
   StyleSheet,
@@ -12,11 +13,14 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Colors from '@/constants/colors';
+import { Radii, Shadows } from '@/constants/theme';
 import { foodLookup } from '@/src/lib/foodLookup';
+import { useFadeUpMotion } from '@/src/lib/motion';
 
 export default function InputScreen() {
   const [foodInput, setFoodInput] = useState('');
   const insets = useSafeAreaInsets();
+  const screenMotion = useFadeUpMotion();
 
   const isButtonDisabled = !foodInput.trim();
 
@@ -41,14 +45,16 @@ export default function InputScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View style={[styles.inner, { paddingTop: insets.top + 24 }]}>
+      <Animated.View
+        style={[styles.inner, { paddingTop: insets.top + 24 }, screenMotion.animatedStyle]}
+      >
         <Text style={styles.header}>Safe or Not</Text>
 
         <View style={styles.content}>
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
-              placeholder="Enter a food"
+              placeholder="Type a food"
               placeholderTextColor={Colors.textMuted}
               value={foodInput}
               onChangeText={setFoodInput}
@@ -67,6 +73,7 @@ export default function InputScreen() {
             ]}
             onPress={handleCheck}
             disabled={isButtonDisabled}
+            activeOpacity={0.88}
             testID="check-button"
           >
             <Text
@@ -75,11 +82,11 @@ export default function InputScreen() {
                 isButtonDisabled && styles.buttonTextDisabled,
               ]}
             >
-              Check
+              See if it's safe
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
     </KeyboardAvoidingView>
   );
 }
@@ -108,12 +115,13 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 2,
     borderColor: Colors.inputBorder,
-    borderRadius: 12,
+    borderRadius: Radii.input,
     paddingHorizontal: 16,
     paddingVertical: 16,
     fontSize: 16,
     color: Colors.text,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.inputBackground,
+    ...(Shadows.input ?? {}),
   },
   helperText: {
     fontSize: 14,
@@ -124,8 +132,9 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: Colors.primary,
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: Radii.button,
     alignItems: 'center',
+    ...(Shadows.button ?? {}),
   },
   buttonDisabled: {
     backgroundColor: Colors.buttonDisabled,

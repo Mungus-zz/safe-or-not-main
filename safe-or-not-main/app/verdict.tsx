@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import {
+  Animated,
   View,
   Text,
   StyleSheet,
@@ -10,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Colors from '@/constants/colors';
 import { formatFoodName } from '@/utils/formatFood';
+import { runFadeDownExit, useFadeUpMotion } from '@/src/lib/motion';
 
 type VerdictType = 'SAFE' | 'TOXIC' | 'VET FIRST';
 
@@ -29,27 +31,42 @@ export default function VerdictScreen() {
     color: string;
   }>();
   const insets = useSafeAreaInsets();
+  const screenMotion = useFadeUpMotion();
+  const isLeavingRef = React.useRef(false);
 
   const formattedFood = formatFoodName(params.food || '');
   const verdictData: VerdictData = {
     verdict: (params.verdict as VerdictType) || 'VET FIRST',
     color: params.color || Colors.vetFirst,
-    explanation: params.explanation || 'Safety information for this food is unclear or varies by preparation.',
-    action: params.action || 'Contact your vet before feeding.',
+    explanation: params.explanation || 'Safety can vary by preparation or portion size.',
+    action: params.action || 'When unsure, contact your vet first.',
   };
 
   const handleBack = () => {
-    router.back();
+    if (isLeavingRef.current) return;
+    isLeavingRef.current = true;
+
+    runFadeDownExit({
+      opacity: screenMotion.opacity,
+      translateY: screenMotion.translateY,
+      durationMs: 160,
+      onDone: () => {
+        router.back();
+      },
+    });
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
+    <Animated.View
+      style={[styles.container, { paddingTop: insets.top + 16 }, screenMotion.animatedStyle]}
+    >
       <TouchableOpacity
         onPress={handleBack}
         style={styles.backButton}
+        activeOpacity={0.7}
         testID="back-button"
       >
-        <Text style={styles.backText}>← Back</Text>
+        <Text style={styles.backText}>← Check another food</Text>
       </TouchableOpacity>
 
       <View style={styles.content}>
@@ -65,9 +82,9 @@ export default function VerdictScreen() {
       </View>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 24 }]}>
-        <Text style={styles.footerText}>Based on veterinary safety sources</Text>
+        <Text style={styles.footerText}>Based on veterinary sources</Text>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 

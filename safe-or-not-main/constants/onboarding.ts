@@ -1,17 +1,17 @@
 export const onboardingData = [
   {
     id: 1,
-    title: "Somtimes, pets eat things they shouldn't.",
-    subtitle: "This app gives you instant answers.",
+    title: "Sometimes, pets eat something they shouldn't.",
+    subtitle: "Get a clear answer in seconds.",
   },
   {
     id: 2,
-    title: "When it happens, you don't have time to research.",
-    subtitle: "One search. One answer.",
+    title: "In the moment, you don't have time to research.",
+    subtitle: "One search. One clear answer.",
   },
   {
     id: 3,
-    title: "Quick guidance. When unsure, contact a vet.",
-    subtitle: 'When unclear, we say "call a vet."',
+    title: "Quick guidance. When you're unsure, contact your vet.",
+    subtitle: "If it's unclear, we'll suggest contacting your vet.",
   },
 ];
