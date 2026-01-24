@@ -86,7 +86,7 @@
     {
       "id": "nuts-general",
       "canonicalName": "Nuts",
-      "synonyms": ["almonds", "pecans", "walnuts", "mixed nuts", "trail mix"],
+      "synonyms": ["almonds", "pecans", "walnuts"],
       "verdict": "VET FIRST",
       "explanation": "Many nuts are high in fat and oils and may cause digestive upset or pancreatitis depending on amount consumed.",
       "action": "Avoid feeding. Contact a vet if vomiting, diarrhea, or lethargy occurs.",
@@ -276,7 +276,7 @@
     {
       "id": "dairy-desserts",
       "canonicalName": "Dairy desserts",
-      "synonyms": ["ice cream", "milkshake", "whipped cream", "custard"],
+      "synonyms": ["milkshake", "whipped cream", "custard"],
       "verdict": "VET FIRST",
       "explanation": "Lactose and high fat content may cause digestive upset depending on amount and tolerance.",
       "action": "Contact a vet if symptoms are significant or persistent.",
