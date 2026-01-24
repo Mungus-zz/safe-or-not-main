@@ -88,8 +88,8 @@
       "canonicalName": "Nuts",
       "synonyms": ["almonds", "pecans", "walnuts", "mixed nuts", "trail mix"],
       "verdict": "VET FIRST",
-      "explanation": "Many nuts are high in oils and fats and can cause stomach upset or pancreatitis risk in some pets.",
-      "action": "Avoid feeding. Contact a vet if a large amount was eaten or symptoms appear.",
+      "explanation": "Many nuts are high in fat and oils and may cause digestive upset or pancreatitis depending on amount consumed.",
+      "action": "Avoid feeding. Contact a vet if vomiting, diarrhea, or lethargy occurs.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -108,8 +108,8 @@
       "canonicalName": "Citrus",
       "synonyms": ["lemon", "limes", "lime", "orange", "oranges", "grapefruit", "citrus peel"],
       "verdict": "VET FIRST",
-      "explanation": "Peels, leaves, and seeds can cause irritation and may cause more serious effects in larger exposures.",
-      "action": "Contact a vet if a large amount was eaten or symptoms appear.",
+      "explanation": "Citrus fruits and peels can cause gastrointestinal irritation, and risk depends on amount consumed.",
+      "action": "Contact a vet if a large amount was eaten or symptoms develop.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -118,8 +118,8 @@
       "canonicalName": "Coconut and coconut oil",
       "synonyms": ["coconut", "coconut oil", "coconut milk"],
       "verdict": "VET FIRST",
-      "explanation": "Coconut products may cause stomach upset, loose stools, or diarrhea in some pets.",
-      "action": "Avoid feeding large amounts. Contact a vet if symptoms appear.",
+      "explanation": "Coconut products may cause digestive upset or diarrhea depending on individual sensitivity and amount.",
+      "action": "Avoid feeding large amounts. Contact a vet if symptoms occur.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -148,8 +148,8 @@
       "canonicalName": "Salt and salty foods",
       "synonyms": ["salt", "chips", "pretzels", "popcorn", "salted nuts", "jerky"],
       "verdict": "VET FIRST",
-      "explanation": "Excessive salt intake can cause vomiting, diarrhea, and more severe effects depending on amount.",
-      "action": "Contact a vet if a large amount was eaten or symptoms appear.",
+      "explanation": "Excessive salt intake can lead to gastrointestinal or neurologic effects depending on amount consumed.",
+      "action": "Contact a vet if a large amount was eaten or symptoms develop.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -158,8 +158,8 @@
       "canonicalName": "Raw or undercooked meat",
       "synonyms": ["raw meat", "undercooked meat", "raw chicken", "raw beef", "raw pork", "sushi"],
       "verdict": "VET FIRST",
-      "explanation": "Raw meat can carry bacteria that may be harmful to pets and people.",
-      "action": "Monitor closely. Contact a vet if vomiting, diarrhea, lethargy, or other symptoms develop.",
+      "explanation": "Raw or undercooked meat may contain bacteria that can cause illness in pets.",
+      "action": "Monitor for symptoms and contact a vet if vomiting, diarrhea, or lethargy occurs.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -168,8 +168,8 @@
       "canonicalName": "Raw eggs",
       "synonyms": ["raw egg", "raw eggs", "egg yolk raw", "raw egg white"],
       "verdict": "VET FIRST",
-      "explanation": "Raw eggs can carry bacteria and may contribute to nutrition issues depending on exposure patterns.",
-      "action": "Contact a vet if symptoms develop or if exposure is repeated.",
+      "explanation": "Raw eggs may carry bacteria and may cause illness depending on exposure and pet health.",
+      "action": "Contact a vet if gastrointestinal symptoms develop.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -178,8 +178,8 @@
       "canonicalName": "Bones",
       "synonyms": ["chicken bone", "turkey bone", "pork bone", "steak bone", "rib bone", "cooked bone", "raw bone"],
       "verdict": "VET FIRST",
-      "explanation": "Bones can cause mouth injury, choking, or intestinal obstruction.",
-      "action": "Contact a vet promptly, especially if a bone was swallowed or symptoms appear.",
+      "explanation": "Bones can cause choking, oral injury, or intestinal obstruction depending on size and preparation.",
+      "action": "Contact a vet promptly if a bone was swallowed or symptoms occur.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -188,7 +188,7 @@
       "canonicalName": "Fatty foods",
       "synonyms": ["bacon grease", "grease", "fat trimmings", "fried food", "butter heavy", "oily food"],
       "verdict": "VET FIRST",
-      "explanation": "High fat foods can cause stomach upset and may trigger pancreatitis in some pets.",
+      "explanation": "High fat foods may cause digestive upset and can trigger pancreatitis in some pets.",
       "action": "Avoid feeding. Contact a vet if vomiting, abdominal pain, or lethargy occurs.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
@@ -198,8 +198,8 @@
       "canonicalName": "Moldy or spoiled food",
       "synonyms": ["moldy bread", "spoiled food", "trash food", "garbage"],
       "verdict": "VET FIRST",
-      "explanation": "Spoiled foods can contain toxins or bacteria that may cause serious illness.",
-      "action": "Contact a vet if your pet ate spoiled food or if symptoms appear.",
+      "explanation": "Spoiled foods may contain toxins or bacteria that can cause illness in pets.",
+      "action": "Contact a vet if ingestion is suspected or symptoms develop.",
       "species": ["dog", "cat"],
       "sources": ["Michigan State University Veterinary Diagnostic Laboratory"]
     },
@@ -208,8 +208,8 @@
       "canonicalName": "Bread products",
       "synonyms": ["bread", "rolls", "bagel", "bun"],
       "verdict": "VET FIRST",
-      "explanation": "Plain baked bread is usually less concerning, but ingredients and amount matter.",
-      "action": "If it contained xylitol, raisins, chocolate, onion, or garlic, contact a vet.",
+      "explanation": "Plain baked bread is generally less concerning, but ingredients and amount consumed matter.",
+      "action": "Contact a vet if the product contained toxic ingredients or symptoms occur.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -218,8 +218,8 @@
       "canonicalName": "Sugar free gum or candy",
       "synonyms": ["gum", "candy", "mints", "breath mints", "sugar free gum", "sugar free candy"],
       "verdict": "VET FIRST",
-      "explanation": "Risk depends on whether xylitol is present and how much was eaten.",
-      "action": "Check ingredients immediately. If xylitol is present, seek veterinary care now.",
+      "explanation": "Risk depends on whether xylitol is present and how much was consumed.",
+      "action": "Check ingredients immediately. If xylitol is present, seek veterinary care.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -228,8 +228,8 @@
       "canonicalName": "Chocolate baked goods",
       "synonyms": ["brownie", "cookie chocolate", "chocolate cake", "hot chocolate"],
       "verdict": "VET FIRST",
-      "explanation": "Risk depends on chocolate type, amount, and pet size.",
-      "action": "Contact a vet or poison control with the product details and amount eaten.",
+      "explanation": "Risk depends on chocolate type, amount consumed, and pet size.",
+      "action": "Contact a vet or poison control with product details and estimated amount eaten.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -238,7 +238,7 @@
       "canonicalName": "Raisin containing foods",
       "synonyms": ["raisin bread", "trail mix raisins", "granola raisins", "oatmeal raisins"],
       "verdict": "VET FIRST",
-      "explanation": "Any raisin containing food carries grape and raisin kidney risk for dogs.",
+      "explanation": "Any raisin-containing food carries kidney risk for dogs, and amount matters.",
       "action": "Contact a vet or poison control promptly.",
       "species": ["dog"],
       "sources": ["ASPCA Poison Control"]
@@ -248,8 +248,8 @@
       "canonicalName": "Onion and garlic seasonings",
       "synonyms": ["seasoning onion", "seasoning garlic", "garlic salt", "onion salt", "all purpose seasoning"],
       "verdict": "VET FIRST",
-      "explanation": "Seasonings may contain concentrated allium ingredients and amount matters.",
-      "action": "Contact a vet if more than a small taste was eaten or symptoms appear.",
+      "explanation": "Seasonings may contain concentrated allium compounds, and risk depends on amount consumed.",
+      "action": "Contact a vet if more than a small taste was eaten or symptoms occur.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -258,8 +258,8 @@
       "canonicalName": "Citrus peels and oils",
       "synonyms": ["lemon peel", "orange peel", "citrus oil", "essential oil citrus"],
       "verdict": "VET FIRST",
-      "explanation": "Peels and oils can be more irritating than the fruit itself and risk depends on amount.",
-      "action": "Contact a vet if a meaningful amount was eaten or symptoms appear.",
+      "explanation": "Peels and oils are more concentrated than fruit and may cause irritation depending on amount.",
+      "action": "Contact a vet if ingestion is suspected or symptoms develop.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -268,7 +268,7 @@
       "canonicalName": "Coconut desserts",
       "synonyms": ["coconut candy", "coconut cookies", "coconut ice cream"],
       "verdict": "VET FIRST",
-      "explanation": "Coconut plus sugar and fat can cause stomach upset, and ingredients vary.",
+      "explanation": "Desserts containing coconut, sugar, and fat may cause digestive upset depending on amount.",
       "action": "Monitor for symptoms and contact a vet if vomiting or diarrhea occurs.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
@@ -278,8 +278,8 @@
       "canonicalName": "Dairy desserts",
       "synonyms": ["ice cream", "milkshake", "whipped cream", "custard"],
       "verdict": "VET FIRST",
-      "explanation": "Lactose and high fat content can cause digestive upset, and amount matters.",
-      "action": "Monitor for symptoms. Contact a vet if symptoms are significant.",
+      "explanation": "Lactose and high fat content may cause digestive upset depending on amount and tolerance.",
+      "action": "Contact a vet if symptoms are significant or persistent.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -288,8 +288,8 @@
       "canonicalName": "Nut mixes",
       "synonyms": ["trail mix", "mixed nuts", "holiday nut mix"],
       "verdict": "VET FIRST",
-      "explanation": "Mixes may include macadamia, chocolate, raisins, or salty coatings.",
-      "action": "Identify ingredients. Contact a vet if any high risk items were included.",
+      "explanation": "Nut mixes may include toxic ingredients such as chocolate, raisins, or macadamia nuts.",
+      "action": "Identify ingredients and contact a vet if high-risk items were included.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -298,10 +298,10 @@
       "canonicalName": "Salty seasonings",
       "synonyms": ["salt lick", "seasoning salt", "salt substitute", "brine"],
       "verdict": "VET FIRST",
-      "explanation": "Excess salt exposure can be dangerous and depends on the amount ingested.",
-      "action": "Contact a vet if you suspect a large exposure or if symptoms appear.",
+      "explanation": "Excess salt exposure can cause illness depending on the amount consumed.",
+      "action": "Contact a vet if you suspect significant exposure or symptoms develop.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
-    }
+    }    
   ]
 }
