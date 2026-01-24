@@ -1,135 +1,307 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "lastUpdated": "2026-01-23",
-  "notes": "Phase 1 MVP dataset. Conservative verdicts. Unknown defaults to VET FIRST.",
+  "notes": "Phase 2 dataset expansion. Conservative verdicts. Unknown defaults to VET FIRST. Sources reference ASPCA Poison Control and Michigan State University VDL owner guidance where applicable.",
   "foods": [
     {
       "id": "chocolate",
       "canonicalName": "Chocolate",
-      "synonyms": ["cocoa", "dark chocolate", "milk chocolate", "baking chocolate"],
+      "synonyms": ["cocoa", "cocoa powder", "dark chocolate", "milk chocolate", "baking chocolate", "white chocolate"],
       "verdict": "TOXIC",
-      "explanation": "Chocolate contains compounds that are toxic to pets.",
-      "action": "Contact a vet immediately.",
+      "explanation": "Chocolate contains methylxanthines that can be dangerous for pets.",
+      "action": "Contact a vet or poison control immediately.",
       "species": ["dog", "cat"],
-      "sources": [
-        "ASPCA Poison Control",
-        "Michigan State University Veterinary Diagnostic Laboratory"
-      ]
-    },
-    {
-      "id": "grapes",
-      "canonicalName": "Grapes",
-      "synonyms": ["raisins"],
-      "verdict": "TOXIC",
-      "explanation": "Grapes can cause sudden kidney failure in dogs.",
-      "action": "Contact a vet immediately.",
-      "species": ["dog"],
-      "sources": [
-        "ASPCA Poison Control",
-        "Michigan State University Veterinary Diagnostic Laboratory"
-      ]
-    },
-    {
-      "id": "onions",
-      "canonicalName": "Onions",
-      "synonyms": ["onion powder", "garlic", "leeks", "chives"],
-      "verdict": "TOXIC",
-      "explanation": "Onions and garlic can damage red blood cells in pets.",
-      "action": "Avoid feeding and contact a vet.",
-      "species": ["dog", "cat"],
-      "sources": [
-        "ASPCA Poison Control",
-        "Michigan State University Veterinary Diagnostic Laboratory"
-      ]
-    },
-    {
-      "id": "xylitol",
-      "canonicalName": "Xylitol",
-      "synonyms": ["sugar-free gum", "sugar-free candy"],
-      "verdict": "TOXIC",
-      "explanation": "Xylitol can cause rapid liver failure in dogs.",
-      "action": "Seek veterinary care immediately.",
-      "species": ["dog"],
-      "sources": [
-        "ASPCA Poison Control"
-      ]
-    },
-    {
-      "id": "alcohol",
-      "canonicalName": "Alcohol",
-      "synonyms": ["beer", "wine", "liquor", "spirits"],
-      "verdict": "TOXIC",
-      "explanation": "Alcohol can cause serious poisoning in pets.",
-      "action": "Contact a vet immediately.",
-      "species": ["dog", "cat"],
-      "sources": [
-        "ASPCA Poison Control",
-        "Michigan State University Veterinary Diagnostic Laboratory"
-      ]
+      "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
     },
     {
       "id": "coffee",
       "canonicalName": "Coffee",
-      "synonyms": ["caffeine", "espresso", "tea"],
+      "synonyms": ["caffeine", "espresso", "latte", "cold brew", "tea", "black tea", "green tea", "matcha", "energy drink"],
       "verdict": "TOXIC",
       "explanation": "Caffeine can cause dangerous heart and nervous system effects.",
-      "action": "Contact a vet immediately.",
+      "action": "Contact a vet or poison control immediately.",
       "species": ["dog", "cat"],
-      "sources": [
-        "ASPCA Poison Control",
-        "Michigan State University Veterinary Diagnostic Laboratory"
-      ]
+      "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
     },
     {
-      "id": "macadamia",
-      "canonicalName": "Macadamia nuts",
-      "synonyms": ["macadamia"],
+      "id": "alcohol",
+      "canonicalName": "Alcohol",
+      "synonyms": ["beer", "wine", "liquor", "spirits", "cocktail", "rum", "vodka", "whiskey"],
       "verdict": "TOXIC",
-      "explanation": "Macadamia nuts can cause weakness and neurological symptoms.",
-      "action": "Seek veterinary advice promptly.",
-      "species": ["dog"],
-      "sources": [
-        "ASPCA Poison Control",
-        "Michigan State University Veterinary Diagnostic Laboratory"
-      ]
-    },
-    {
-      "id": "avocado",
-      "canonicalName": "Avocado",
-      "synonyms": ["guacamole"],
-      "verdict": "VET FIRST",
-      "explanation": "Parts of avocado can be harmful to some pets.",
-      "action": "Contact a vet if ingestion occurs.",
+      "explanation": "Alcohol can cause serious poisoning in pets.",
+      "action": "Contact a vet or poison control immediately.",
       "species": ["dog", "cat"],
-      "sources": [
-        "ASPCA Poison Control",
-        "Michigan State University Veterinary Diagnostic Laboratory"
-      ]
+      "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
     },
     {
       "id": "yeast-dough",
       "canonicalName": "Raw yeast dough",
-      "synonyms": ["raw dough", "bread dough"],
+      "synonyms": ["raw dough", "bread dough", "pizza dough", "yeast dough"],
       "verdict": "TOXIC",
-      "explanation": "Raw dough can expand and produce alcohol in the stomach.",
+      "explanation": "Raw dough can expand in the stomach and can also produce alcohol.",
       "action": "Seek veterinary care immediately.",
       "species": ["dog"],
-      "sources": [
-        "ASPCA Poison Control",
-        "Michigan State University Veterinary Diagnostic Laboratory"
-      ]
+      "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
+    },
+    {
+      "id": "xylitol",
+      "canonicalName": "Xylitol",
+      "synonyms": ["sugar free gum", "sugar free candy", "sugar free mints", "toothpaste", "mouthwash"],
+      "verdict": "TOXIC",
+      "explanation": "Xylitol can cause dangerously low blood sugar and possible liver injury in dogs.",
+      "action": "Seek veterinary care immediately.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "grapes",
+      "canonicalName": "Grapes",
+      "synonyms": ["raisins", "currants", "sultanas"],
+      "verdict": "TOXIC",
+      "explanation": "Grapes and raisins can cause kidney injury in dogs.",
+      "action": "Contact a vet or poison control immediately.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
+    },
+    {
+      "id": "onion-garlic-chives",
+      "canonicalName": "Onion, garlic, chives",
+      "synonyms": ["onion", "onions", "onion powder", "garlic", "garlic powder", "chives", "leeks", "scallions", "green onion"],
+      "verdict": "TOXIC",
+      "explanation": "Allium vegetables can irritate the gut and damage red blood cells.",
+      "action": "Avoid feeding and contact a vet if a meaningful amount was eaten.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
+    },
+    {
+      "id": "macadamia",
+      "canonicalName": "Macadamia nuts",
+      "synonyms": ["macadamia", "macadamias"],
+      "verdict": "TOXIC",
+      "explanation": "Macadamia nuts can cause weakness and other neurologic signs in dogs.",
+      "action": "Seek veterinary advice promptly.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
+    },
+    {
+      "id": "nuts-general",
+      "canonicalName": "Nuts",
+      "synonyms": ["almonds", "pecans", "walnuts", "mixed nuts", "trail mix"],
+      "verdict": "VET FIRST",
+      "explanation": "Many nuts are high in oils and fats and can cause stomach upset or pancreatitis risk in some pets.",
+      "action": "Avoid feeding. Contact a vet if a large amount was eaten or symptoms appear.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "milk-dairy",
+      "canonicalName": "Milk and dairy",
+      "synonyms": ["milk", "cheese", "ice cream", "cream", "yogurt", "butter"],
+      "verdict": "VET FIRST",
+      "explanation": "Many pets do not tolerate lactose well and may develop diarrhea or digestive upset.",
+      "action": "Avoid feeding. Contact a vet if symptoms are significant or persistent.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "citrus",
+      "canonicalName": "Citrus",
+      "synonyms": ["lemon", "limes", "lime", "orange", "oranges", "grapefruit", "citrus peel"],
+      "verdict": "VET FIRST",
+      "explanation": "Peels, leaves, and seeds can cause irritation and may cause more serious effects in larger exposures.",
+      "action": "Contact a vet if a large amount was eaten or symptoms appear.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "coconut",
+      "canonicalName": "Coconut and coconut oil",
+      "synonyms": ["coconut", "coconut oil", "coconut milk"],
+      "verdict": "VET FIRST",
+      "explanation": "Coconut products may cause stomach upset, loose stools, or diarrhea in some pets.",
+      "action": "Avoid feeding large amounts. Contact a vet if symptoms appear.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "avocado",
+      "canonicalName": "Avocado",
+      "synonyms": ["guacamole", "avocado oil"],
+      "verdict": "VET FIRST",
+      "explanation": "Risk varies by species and amount, and some parts may cause digestive upset or other concerns.",
+      "action": "Contact a vet if a meaningful amount was eaten, especially if symptoms appear.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
     },
     {
       "id": "peanut-butter",
       "canonicalName": "Peanut butter",
-      "synonyms": ["peanuts"],
+      "synonyms": ["peanuts", "pb", "peanut butter sandwich"],
       "verdict": "VET FIRST",
-      "explanation": "Some peanut butter contains xylitol, which is toxic to dogs.",
-      "action": "Check ingredients or contact a vet.",
+      "explanation": "Some peanut butter contains xylitol, which is dangerous for dogs.",
+      "action": "Check ingredients. If xylitol is listed, seek veterinary care immediately.",
       "species": ["dog"],
-      "sources": [
-        "ASPCA Poison Control"
-      ]
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "salt",
+      "canonicalName": "Salt and salty foods",
+      "synonyms": ["salt", "chips", "pretzels", "popcorn", "salted nuts", "jerky"],
+      "verdict": "VET FIRST",
+      "explanation": "Excessive salt intake can cause vomiting, diarrhea, and more severe effects depending on amount.",
+      "action": "Contact a vet if a large amount was eaten or symptoms appear.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "raw-meat",
+      "canonicalName": "Raw or undercooked meat",
+      "synonyms": ["raw meat", "undercooked meat", "raw chicken", "raw beef", "raw pork", "sushi"],
+      "verdict": "VET FIRST",
+      "explanation": "Raw meat can carry bacteria that may be harmful to pets and people.",
+      "action": "Monitor closely. Contact a vet if vomiting, diarrhea, lethargy, or other symptoms develop.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "raw-eggs",
+      "canonicalName": "Raw eggs",
+      "synonyms": ["raw egg", "raw eggs", "egg yolk raw", "raw egg white"],
+      "verdict": "VET FIRST",
+      "explanation": "Raw eggs can carry bacteria and may contribute to nutrition issues depending on exposure patterns.",
+      "action": "Contact a vet if symptoms develop or if exposure is repeated.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "bones",
+      "canonicalName": "Bones",
+      "synonyms": ["chicken bone", "turkey bone", "pork bone", "steak bone", "rib bone", "cooked bone", "raw bone"],
+      "verdict": "VET FIRST",
+      "explanation": "Bones can cause mouth injury, choking, or intestinal obstruction.",
+      "action": "Contact a vet promptly, especially if a bone was swallowed or symptoms appear.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "fatty-foods",
+      "canonicalName": "Fatty foods",
+      "synonyms": ["bacon grease", "grease", "fat trimmings", "fried food", "butter heavy", "oily food"],
+      "verdict": "VET FIRST",
+      "explanation": "High fat foods can cause stomach upset and may trigger pancreatitis in some pets.",
+      "action": "Avoid feeding. Contact a vet if vomiting, abdominal pain, or lethargy occurs.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "moldy-food",
+      "canonicalName": "Moldy or spoiled food",
+      "synonyms": ["moldy bread", "spoiled food", "trash food", "garbage"],
+      "verdict": "VET FIRST",
+      "explanation": "Spoiled foods can contain toxins or bacteria that may cause serious illness.",
+      "action": "Contact a vet if your pet ate spoiled food or if symptoms appear.",
+      "species": ["dog", "cat"],
+      "sources": ["Michigan State University Veterinary Diagnostic Laboratory"]
+    },
+    {
+      "id": "bread-products",
+      "canonicalName": "Bread products",
+      "synonyms": ["bread", "rolls", "bagel", "bun"],
+      "verdict": "VET FIRST",
+      "explanation": "Plain baked bread is usually less concerning, but ingredients and amount matter.",
+      "action": "If it contained xylitol, raisins, chocolate, onion, or garlic, contact a vet.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "gum-candy",
+      "canonicalName": "Sugar free gum or candy",
+      "synonyms": ["gum", "candy", "mints", "breath mints", "sugar free gum", "sugar free candy"],
+      "verdict": "VET FIRST",
+      "explanation": "Risk depends on whether xylitol is present and how much was eaten.",
+      "action": "Check ingredients immediately. If xylitol is present, seek veterinary care now.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "cocoa-baked-goods",
+      "canonicalName": "Chocolate baked goods",
+      "synonyms": ["brownie", "cookie chocolate", "chocolate cake", "hot chocolate"],
+      "verdict": "VET FIRST",
+      "explanation": "Risk depends on chocolate type, amount, and pet size.",
+      "action": "Contact a vet or poison control with the product details and amount eaten.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "raisins-cereals",
+      "canonicalName": "Raisin containing foods",
+      "synonyms": ["raisin bread", "trail mix raisins", "granola raisins", "oatmeal raisins"],
+      "verdict": "VET FIRST",
+      "explanation": "Any raisin containing food carries grape and raisin kidney risk for dogs.",
+      "action": "Contact a vet or poison control promptly.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "onion-seasonings",
+      "canonicalName": "Onion and garlic seasonings",
+      "synonyms": ["seasoning onion", "seasoning garlic", "garlic salt", "onion salt", "all purpose seasoning"],
+      "verdict": "VET FIRST",
+      "explanation": "Seasonings may contain concentrated allium ingredients and amount matters.",
+      "action": "Contact a vet if more than a small taste was eaten or symptoms appear.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "citrus-peels",
+      "canonicalName": "Citrus peels and oils",
+      "synonyms": ["lemon peel", "orange peel", "citrus oil", "essential oil citrus"],
+      "verdict": "VET FIRST",
+      "explanation": "Peels and oils can be more irritating than the fruit itself and risk depends on amount.",
+      "action": "Contact a vet if a meaningful amount was eaten or symptoms appear.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "coconut-desserts",
+      "canonicalName": "Coconut desserts",
+      "synonyms": ["coconut candy", "coconut cookies", "coconut ice cream"],
+      "verdict": "VET FIRST",
+      "explanation": "Coconut plus sugar and fat can cause stomach upset, and ingredients vary.",
+      "action": "Monitor for symptoms and contact a vet if vomiting or diarrhea occurs.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "dairy-desserts",
+      "canonicalName": "Dairy desserts",
+      "synonyms": ["ice cream", "milkshake", "whipped cream", "custard"],
+      "verdict": "VET FIRST",
+      "explanation": "Lactose and high fat content can cause digestive upset, and amount matters.",
+      "action": "Monitor for symptoms. Contact a vet if symptoms are significant.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "nut-mixes",
+      "canonicalName": "Nut mixes",
+      "synonyms": ["trail mix", "mixed nuts", "holiday nut mix"],
+      "verdict": "VET FIRST",
+      "explanation": "Mixes may include macadamia, chocolate, raisins, or salty coatings.",
+      "action": "Identify ingredients. Contact a vet if any high risk items were included.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "salty-seasonings",
+      "canonicalName": "Salty seasonings",
+      "synonyms": ["salt lick", "seasoning salt", "salt substitute", "brine"],
+      "verdict": "VET FIRST",
+      "explanation": "Excess salt exposure can be dangerous and depends on the amount ingested.",
+      "action": "Contact a vet if you suspect a large exposure or if symptoms appear.",
+      "species": ["dog", "cat"],
+      "sources": ["ASPCA Poison Control"]
     }
   ]
 }
