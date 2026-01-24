@@ -1,47 +1,55 @@
-Safe or Not
+🐾 Safe or Not
 
-Safe or Not is a calm, single purpose mobile app that helps pet owners quickly determine whether a food is safe, toxic, or requires veterinary guidance for pets.
+Safe or Not is a calm, single-purpose mobile app that helps pet owners quickly determine whether a food is safe, toxic, or requires veterinary guidance for pets.
 
-The app is intentionally minimal and conservative. It prioritizes clarity, trust, and emotional steadiness at moments when users may be uncertain or stressed.
+The app is intentionally minimal and conservative.
+It prioritizes clarity, trust, and emotional steadiness at moments when users may be uncertain or stressed.
 
-Current Version
+📦 Current Version
 
 v0.4.0
 
 Phase 2 complete: visual polish, motion, and microcopy refinement.
 
-Core Purpose
+🎯 Core Purpose
 
 Help pet owners answer one question clearly and responsibly:
 
 Is this food safe for my pet?
 
-No dashboards.
-No tracking.
-No gamification.
-No self help tone.
+What this app is not
 
-Just a clear answer.
+No dashboards
 
-How It Works
+No history or tracking
+
+No streaks or scores
+
+No self-help tone
+
+No gamification
+
+Just a clear answer, delivered calmly.
+
+🔁 How It Works
 
 The user enters a food name
 
-The app returns one of three verdicts:
+The app returns one of three conservative verdicts:
 
-SAFE
+🟢 SAFE
 
-TOXIC
+🔴 TOXIC
 
-VET FIRST
+⚠️ VET FIRST
 
-Users can immediately check another food if needed
+The user can immediately check another food
 
-The flow is linear, fast, and interruption free.
+The flow is linear, fast, and interruption-free.
 
-Data Model
+🧠 Data Model
 
-Local JSON based dataset
+Local JSON-based dataset
 
 Conservative classifications only
 
@@ -51,24 +59,24 @@ Synonym support and normalized input matching
 
 Tolerant of punctuation, casing, and spacing
 
-Species specific coverage where applicable
+Species-specific coverage where applicable
 
 Source attribution included for each food
 
-There are no backend calls and no network dependencies.
+No backend. No network calls.
 
-Design Philosophy
+🎨 Design Philosophy
 Visual Design
 
-Warm modern pet brand aesthetic
+Warm, modern pet brand aesthetic
 
-Off white backgrounds to avoid clinical starkness
+Off-white backgrounds (no stark white)
 
-Soft elevated surfaces for input and actions
+Soft, elevated surfaces for input and actions
 
 Restrained, accessible verdict colors
 
-Strong text contrast and readable typography
+Strong contrast and readable typography
 
 No decorative or distracting UI
 
@@ -76,7 +84,7 @@ The design favors calm authority over friendliness or playfulness.
 
 Motion & Interaction
 
-Subtle fade and vertical motion for screen transitions
+Subtle fade + vertical motion for screen transitions
 
 Motion reinforces continuity, never urgency
 
@@ -84,9 +92,10 @@ Verdicts are revealed with composed pacing
 
 Back navigation feels lighter and dismissive
 
-Centralized motion tokens ensure consistency
+Centralized motion tokens for consistency
 
-No flashy animations. No bounce effects.
+No flashy animations.
+No bounce effects.
 
 Microcopy
 
@@ -96,13 +105,15 @@ CTAs framed as guidance, not commands
 
 Navigation language is contextual
 
-No emotional manipulation or self help framing
+No emotional manipulation
 
-Copy is intentionally neutral and trust forward.
+No self-help framing
 
-Architecture
+Copy is intentionally neutral and trust-forward.
 
-Built with Expo and expo router
+🏗 Architecture
+
+Built with Expo and expo-router
 
 Clean separation of concerns
 
@@ -120,7 +131,7 @@ Shadows
 
 Motion
 
-No backend
+No backend dependencies
 
 No analytics
 
@@ -128,9 +139,9 @@ No tracking
 
 No notifications
 
-The codebase is stable, readable, and future extensible.
+The codebase is stable, readable, and future-extensible.
 
-What v0.4.0 Represents
+✅ What v0.4.0 Represents
 
 MVP fully functional
 
@@ -142,9 +153,12 @@ Microcopy refined
 
 Phase 2 complete
 
-This version serves as a solid long term foundation. Future work can focus on intelligence, dataset expansion, or monetization without reworking core UX or visuals.
+This version serves as a long-term foundation.
+Future work can focus on intelligence or expansion without reworking core UX or visuals.
 
-Future Directions (Not Implemented)
+🔮 Future Directions (Not Implemented)
+
+These are intentionally deferred:
 
 Expanded food dataset
 
@@ -152,10 +166,8 @@ Veterinary intelligence or LLM integration
 
 Monetization experiments
 
-Regional or species specific guidance
+Regional or species-specific guidance
 
-These are intentionally deferred until after validation.
-
-License
+🔒 License
 
 Private project. All rights reserved.
