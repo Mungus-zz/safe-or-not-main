@@ -8,7 +8,7 @@
       "canonicalName": "Chocolate",
       "synonyms": ["cocoa", "cocoa powder", "dark chocolate", "milk chocolate", "baking chocolate", "white chocolate"],
       "verdict": "TOXIC",
-      "explanation": "Chocolate contains methylxanthines that can be dangerous for pets.",
+      "explanation": "Chocolate contains methylxanthines that can affect the heart and nervous system of pets.",
       "action": "Contact a vet or poison control immediately.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
@@ -18,7 +18,7 @@
       "canonicalName": "Coffee",
       "synonyms": ["caffeine", "espresso", "latte", "cold brew", "tea", "black tea", "green tea", "matcha", "energy drink"],
       "verdict": "TOXIC",
-      "explanation": "Caffeine can cause dangerous heart and nervous system effects.",
+      "explanation": "Caffeine can overstimulate the heart and nervous system of pets.",
       "action": "Contact a vet or poison control immediately.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
@@ -28,7 +28,7 @@
       "canonicalName": "Alcohol",
       "synonyms": ["beer", "wine", "liquor", "spirits", "cocktail", "rum", "vodka", "whiskey"],
       "verdict": "TOXIC",
-      "explanation": "Alcohol can cause serious poisoning in pets.",
+      "explanation": "Alcohol can depress the nervous system and cause serious poisoning in pets.",
       "action": "Contact a vet or poison control immediately.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
@@ -38,7 +38,7 @@
       "canonicalName": "Raw yeast dough",
       "synonyms": ["raw dough", "bread dough", "pizza dough", "yeast dough"],
       "verdict": "TOXIC",
-      "explanation": "Raw dough can expand in the stomach and can also produce alcohol.",
+      "explanation": "Raw dough can expand in the stomach and produce alcohol during digestion.",
       "action": "Seek veterinary care immediately.",
       "species": ["dog"],
       "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
@@ -48,7 +48,7 @@
       "canonicalName": "Xylitol",
       "synonyms": ["sugar free gum", "sugar free candy", "sugar free mints", "toothpaste", "mouthwash"],
       "verdict": "TOXIC",
-      "explanation": "Xylitol can cause dangerously low blood sugar and possible liver injury in dogs.",
+      "explanation": "Xylitol can cause dangerously low blood sugar and acute liver injury in dogs.",
       "action": "Seek veterinary care immediately.",
       "species": ["dog"],
       "sources": ["ASPCA Poison Control"]
@@ -58,7 +58,7 @@
       "canonicalName": "Grapes",
       "synonyms": ["raisins", "currants", "sultanas"],
       "verdict": "TOXIC",
-      "explanation": "Grapes and raisins can cause kidney injury in dogs.",
+      "explanation": "Grapes and raisins have been associated with sudden kidney injury in dogs.",
       "action": "Contact a vet or poison control immediately.",
       "species": ["dog"],
       "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
@@ -68,8 +68,8 @@
       "canonicalName": "Onion, garlic, chives",
       "synonyms": ["onion", "onions", "onion powder", "garlic", "garlic powder", "chives", "leeks", "scallions", "green onion"],
       "verdict": "TOXIC",
-      "explanation": "Allium vegetables can irritate the gut and damage red blood cells.",
-      "action": "Avoid feeding and contact a vet if a meaningful amount was eaten.",
+      "explanation": "Allium vegetables can damage red blood cells and lead to anemia in pets.",
+      "action": "Avoid feeding and contact a vet if ingestion is suspected.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
     },
@@ -78,7 +78,7 @@
       "canonicalName": "Macadamia nuts",
       "synonyms": ["macadamia", "macadamias"],
       "verdict": "TOXIC",
-      "explanation": "Macadamia nuts can cause weakness and other neurologic signs in dogs.",
+      "explanation": "Macadamia nuts can cause weakness, tremors, and other neurologic signs in dogs.",
       "action": "Seek veterinary advice promptly.",
       "species": ["dog"],
       "sources": ["ASPCA Poison Control", "Michigan State University Veterinary Diagnostic Laboratory"]
@@ -98,8 +98,8 @@
       "canonicalName": "Milk and dairy",
       "synonyms": ["milk", "cheese", "ice cream", "cream", "yogurt", "butter"],
       "verdict": "VET FIRST",
-      "explanation": "Many pets do not tolerate lactose well and may develop diarrhea or digestive upset.",
-      "action": "Avoid feeding. Contact a vet if symptoms are significant or persistent.",
+      "explanation": "Many pets have limited lactose tolerance and may develop digestive upset after consuming dairy.",
+      "action": "Avoid feeding. Contact a vet if vomiting, diarrhea, or lethargy occurs.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
@@ -138,8 +138,8 @@
       "canonicalName": "Peanut butter",
       "synonyms": ["peanuts", "pb", "peanut butter sandwich"],
       "verdict": "VET FIRST",
-      "explanation": "Some peanut butter contains xylitol, which is dangerous for dogs.",
-      "action": "Check ingredients. If xylitol is listed, seek veterinary care immediately.",
+      "explanation": "Some peanut butter products contain xylitol, which is dangerous for dogs.",
+      "action": "Check the ingredient label immediately. If xylitol is listed, seek veterinary care.",
       "species": ["dog"],
       "sources": ["ASPCA Poison Control"]
     },
