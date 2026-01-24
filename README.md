@@ -168,6 +168,33 @@ Monetization experiments
 
 Regional or species-specific guidance
 
+
+Phase 3.1 – Ingredient decomposition MVP
+
+LLM decomposes foods → ingredients
+
+Uses your existing dataset for verdicts
+
+Conservative aggregation
+
+No UI changes
+
+Phase 3.2 – Confidence refinement
+
+Quantity awareness (small vs large amounts)
+
+Cooking method awareness
+
+Species nuance improved
+
+Phase 3.3 – Authority reinforcement
+
+VetClinPathGPT as internal reviewer
+
+Source reinforcement
+
+Edge case handling
+
 🔒 License
 
 Private project. All rights reserved.
