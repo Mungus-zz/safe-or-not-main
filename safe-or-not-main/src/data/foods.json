@@ -302,6 +302,206 @@
       "action": "Contact a vet if you suspect significant exposure or symptoms develop.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
-    }    
+    },
+    {
+      "id": "apple",
+      "canonicalName": "Apple",
+      "synonyms": ["apples"],
+      "verdict": "SAFE",
+      "explanation": "Apples are safe for dogs when seeds are removed.",
+      "action": "Remove seeds and core before feeding.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "banana",
+      "canonicalName": "Banana",
+      "synonyms": ["bananas"],
+      "verdict": "SAFE",
+      "explanation": "Bananas are safe for dogs when plain and unseasoned.",
+      "action": "Feed in moderation as a treat.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "beef",
+      "canonicalName": "Beef",
+      "synonyms": ["beef meat", "ground beef", "steak"],
+      "verdict": "SAFE",
+      "explanation": "Plain cooked beef without bones is safe for dogs.",
+      "action": "Ensure it is fully cooked and contains no bones or seasonings.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "blueberries",
+      "canonicalName": "Blueberries",
+      "synonyms": ["blueberry"],
+      "verdict": "SAFE",
+      "explanation": "Blueberries are safe for dogs when plain and unseasoned.",
+      "action": "Feed in moderation as a treat.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "broccoli",
+      "canonicalName": "Broccoli",
+      "synonyms": ["broccoli florets", "broccoli stems"],
+      "verdict": "SAFE",
+      "explanation": "Broccoli is safe for dogs when plain and unseasoned.",
+      "action": "Feed in moderation as a treat.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "cantaloupe",
+      "canonicalName": "Cantaloupe",
+      "synonyms": ["muskmelon", "rockmelon"],
+      "verdict": "SAFE",
+      "explanation": "Cantaloupe is safe for dogs when plain and unseasoned.",
+      "action": "Remove rind and seeds before feeding.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "carrots",
+      "canonicalName": "Carrots",
+      "synonyms": ["carrot"],
+      "verdict": "SAFE",
+      "explanation": "Carrots are safe for dogs when plain and unseasoned.",
+      "action": "Feed raw or cooked without seasonings.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "cauliflower",
+      "canonicalName": "Cauliflower",
+      "synonyms": ["cauliflower florets"],
+      "verdict": "SAFE",
+      "explanation": "Cauliflower is safe for dogs when plain and unseasoned.",
+      "action": "Feed in moderation as a treat.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "celery",
+      "canonicalName": "Celery",
+      "synonyms": ["celery stalks", "celery sticks"],
+      "verdict": "SAFE",
+      "explanation": "Celery is safe for dogs when plain and unseasoned.",
+      "action": "Feed in moderation as a treat.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "cheese",
+      "canonicalName": "Cheese",
+      "synonyms": ["cheddar", "mozzarella", "swiss cheese"],
+      "verdict": "SAFE",
+      "explanation": "Cheese is safe for dogs in small amounts when plain.",
+      "action": "Feed only small amounts as an occasional treat.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "chicken",
+      "canonicalName": "Chicken",
+      "synonyms": ["chicken meat", "chicken breast", "chicken thigh"],
+      "verdict": "SAFE",
+      "explanation": "Plain cooked chicken without bones is safe for dogs.",
+      "action": "Ensure it is fully cooked and contains no bones or seasonings.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "pumpkin",
+      "canonicalName": "Cooked pumpkin",
+      "synonyms": ["pumpkin puree", "canned pumpkin"],
+      "verdict": "SAFE",
+      "explanation": "Cooked pumpkin is safe for dogs when plain and unseasoned.",
+      "action": "Feed plain cooked pumpkin without added spices or sugar.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "green-beans",
+      "canonicalName": "Green beans",
+      "synonyms": ["green bean", "string beans", "snap beans"],
+      "verdict": "SAFE",
+      "explanation": "Green beans are safe for dogs when plain and unseasoned.",
+      "action": "Feed raw or cooked without seasonings.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "kiwi",
+      "canonicalName": "Kiwi",
+      "synonyms": ["kiwifruit", "kiwis"],
+      "verdict": "SAFE",
+      "explanation": "Kiwi is safe for dogs when plain and unseasoned.",
+      "action": "Remove skin before feeding.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "peanut-butter-safe",
+      "canonicalName": "Peanut butter",
+      "synonyms": ["xylitol free peanut butter", "natural peanut butter"],
+      "verdict": "SAFE",
+      "explanation": "Xylitol-free peanut butter is safe for dogs in moderation.",
+      "action": "Verify the product contains no xylitol before feeding.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "pineapple",
+      "canonicalName": "Pineapple",
+      "synonyms": ["pineapples"],
+      "verdict": "SAFE",
+      "explanation": "Pineapple is safe for dogs when plain and unseasoned.",
+      "action": "Remove tough outer skin and core before feeding.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "popcorn",
+      "canonicalName": "Popcorn",
+      "synonyms": ["plain popcorn", "air popped popcorn"],
+      "verdict": "SAFE",
+      "explanation": "Plain popcorn without salt, butter, or seasonings is safe for dogs.",
+      "action": "Feed only plain, unseasoned popcorn in moderation.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "pork",
+      "canonicalName": "Pork",
+      "synonyms": ["pork meat", "pork chop", "pork loin"],
+      "verdict": "SAFE",
+      "explanation": "Plain cooked pork without bones is safe for dogs.",
+      "action": "Ensure it is fully cooked and contains no bones or seasonings.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "strawberries",
+      "canonicalName": "Strawberries",
+      "synonyms": ["strawberry"],
+      "verdict": "SAFE",
+      "explanation": "Strawberries are safe for dogs when plain and unseasoned.",
+      "action": "Feed in moderation as a treat.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    },
+    {
+      "id": "turkey",
+      "canonicalName": "Turkey",
+      "synonyms": ["turkey meat", "turkey breast"],
+      "verdict": "SAFE",
+      "explanation": "Plain cooked turkey without bones is safe for dogs.",
+      "action": "Ensure it is fully cooked and contains no bones or seasonings.",
+      "species": ["dog"],
+      "sources": ["ASPCA Poison Control"]
+    }
   ]
 }

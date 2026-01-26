@@ -14,19 +14,25 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Colors from '@/constants/colors';
 import { Radii, Shadows } from '@/constants/theme';
-import { foodLookup } from '@/src/lib/foodLookup';
 import { useFadeUpMotion } from '@/src/lib/motion';
+import { smartFoodLookup } from '@/src/lib/smartFoodLookup';
 
 export default function InputScreen() {
   const [foodInput, setFoodInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const insets = useSafeAreaInsets();
   const screenMotion = useFadeUpMotion();
 
   const isButtonDisabled = !foodInput.trim();
+  const isCheckDisabled = isButtonDisabled || isLoading;
 
-  const handleCheck = () => {
-    if (!isButtonDisabled) {
-      const lookupResult = foodLookup(foodInput);
+  const handleCheck = async () => {
+    if (isLoading) return;
+    if (isButtonDisabled) return;
+
+    setIsLoading(true);
+    try {
+      const lookupResult = await smartFoodLookup(foodInput, 'dog');
       router.push({
         pathname: '/verdict',
         params: {
@@ -37,6 +43,8 @@ export default function InputScreen() {
           color: lookupResult.color,
         },
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -69,20 +77,20 @@ export default function InputScreen() {
           <TouchableOpacity
             style={[
               styles.button,
-              isButtonDisabled && styles.buttonDisabled,
+              isCheckDisabled && styles.buttonDisabled,
             ]}
             onPress={handleCheck}
-            disabled={isButtonDisabled}
+            disabled={isCheckDisabled}
             activeOpacity={0.88}
             testID="check-button"
           >
             <Text
               style={[
                 styles.buttonText,
-                isButtonDisabled && styles.buttonTextDisabled,
+                isCheckDisabled && styles.buttonTextDisabled,
               ]}
             >
-              See if it's safe
+              {isLoading ? 'Checking...' : "See if it's safe"}
             </Text>
           </TouchableOpacity>
         </View>
