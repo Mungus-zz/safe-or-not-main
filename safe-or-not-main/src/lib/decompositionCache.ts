@@ -11,7 +11,7 @@ type CacheEnvelope = {
   expiresAt: number;
 };
 
-const KEY_PREFIX = 'decomp:v2:';
+const KEY_PREFIX = 'decomp:v3:';
 const DEFAULT_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 function makeKey(normalizedName: string, species: Species): string {

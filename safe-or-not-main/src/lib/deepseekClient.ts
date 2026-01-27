@@ -17,8 +17,21 @@ type CallDeepSeekOptions = {
   model?: string;
 };
 
-const DEFAULT_TIMEOUT_MS = 12_000;
+const DEFAULT_TIMEOUT_MS = 20_000;
 const DEFAULT_MODEL = 'tngtech/deepseek-r1t2-chimera:free';
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isAbortError(err: unknown): boolean {
+  return (
+    err !== null &&
+    typeof err === 'object' &&
+    'name' in err &&
+    (err as { name?: string }).name === 'AbortError'
+  );
+}
 
 function getApiKey(): string {
   const key = process.env.EXPO_PUBLIC_OPENROUTER_API_KEY;
@@ -40,13 +53,11 @@ async function postWithTimeout(url: string, init: RequestInit, timeoutMs: number
 }
 
 function shouldRetry(err: unknown, res?: Response): boolean {
-  // Retry once on timeouts / aborts and transient server errors.
+  // Retry once on transient server errors.
   if (res) return res.status >= 500 || res.status === 429;
 
-  if (err && typeof err === 'object' && 'name' in err) {
-    return (err as { name?: string }).name === 'AbortError';
-  }
-  return true;
+  // Retry only on abort timeout errors.
+  return isAbortError(err);
 }
 
 async function readErrorBody(res: Response): Promise<string> {
@@ -95,14 +106,28 @@ export async function callDeepSeek(
 
   let lastError: unknown;
   for (let attempt = 0; attempt < 2; attempt++) {
+    const startTime = Date.now();
+    const isRetry = attempt > 0;
+
     try {
       const res = await postWithTimeout(url, init, timeoutMs);
+      const durationMs = Date.now() - startTime;
 
       if (!res.ok) {
         if (attempt === 0 && shouldRetry(undefined, res)) {
+          if (__DEV__) {
+            console.log(
+              `OPENROUTER_CALL duration_ms=${durationMs} model=${model} retry=${isRetry} status=${res.status}`,
+            );
+          }
           continue;
         }
         const extra = await readErrorBody(res);
+        if (__DEV__) {
+          console.log(
+            `OPENROUTER_CALL duration_ms=${durationMs} model=${model} retry=${isRetry} status=${res.status} failed`,
+          );
+        }
         throw new Error(`OpenRouter request failed: ${res.status} ${res.statusText}.${extra}`);
       }
 
@@ -118,6 +143,10 @@ export async function callDeepSeek(
           ? ((data as any).choices[0].message.content as string)
           : null;
 
+      if (__DEV__) {
+        console.log(`OPENROUTER_CALL duration_ms=${durationMs} model=${model} retry=${isRetry} success`);
+      }
+
       if (text === null) {
         // Return as much as possible for debugging while still being "raw text".
         return JSON.stringify(data);
@@ -125,9 +154,25 @@ export async function callDeepSeek(
 
       return text;
     } catch (err) {
+      const durationMs = Date.now() - startTime;
       lastError = err;
+
       if (attempt === 0 && shouldRetry(err)) {
+        if (__DEV__) {
+          console.log(
+            `OPENROUTER_CALL duration_ms=${durationMs} model=${model} retry=${isRetry} error=abort_timeout`,
+          );
+        }
+        // Add 400ms delay before retry
+        await sleep(400);
         continue;
+      }
+
+      if (__DEV__) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        console.log(
+          `OPENROUTER_CALL duration_ms=${durationMs} model=${model} retry=${isRetry} error="${errorMsg}"`,
+        );
       }
       throw err;
     }

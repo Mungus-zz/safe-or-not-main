@@ -123,24 +123,175 @@ function lookupDatasetEntry(raw: string): FoodEntry | null {
   return byNormalizedKey.get(key) ?? null;
 }
 
-function aggregateVerdict(entries: FoodEntry[]): VerdictType {
-  for (const e of entries) {
-    if (e.verdict === 'TOXIC') return 'TOXIC';
+const MIXED_DISH_TOKENS = [
+  'soup',
+  'stew',
+  'pasta',
+  'pizza',
+  'sandwich',
+  'salad',
+  'casserole',
+  'ramen',
+  'bisque',
+  'curry',
+  'taco',
+  'burrito',
+  'kebab',
+  'parmesan',
+  'stir fry',
+];
+
+function isMixedDish(normalizedInput: string): boolean {
+  const lower = normalizedInput.toLowerCase();
+  return MIXED_DISH_TOKENS.some((token) => lower.includes(token));
+}
+
+const hazardAliasMap: Record<string, string> = {
+  chocolate: 'chocolate',
+  'cocoa': 'chocolate',
+  'cocoa powder': 'chocolate',
+  'dark chocolate': 'chocolate',
+  'milk chocolate': 'chocolate',
+  'chocolate chips': 'chocolate',
+  'baking chocolate': 'chocolate',
+  xylitol: 'xylitol',
+  'sugar-free gum': 'xylitol',
+  'sugar free gum': 'xylitol',
+  'sugar-free candy': 'xylitol',
+  'sugar free candy': 'xylitol',
+  raisins: 'raisins',
+  raisin: 'raisins',
+  grapes: 'grapes',
+  grape: 'grapes',
+  alcohol: 'alcohol',
+  beer: 'alcohol',
+  wine: 'alcohol',
+  liquor: 'alcohol',
+  spirits: 'alcohol',
+  macadamia: 'macadamia',
+  'macadamia nut': 'macadamia',
+  'macadamia nuts': 'macadamia',
+  macadamias: 'macadamia',
+};
+
+const alwaysToxicSet = new Set([
+  'chocolate',
+  'xylitol',
+  'grapes',
+  'raisins',
+  'alcohol',
+  'macadamia',
+]);
+
+const additiveToxicSet = new Set([
+  'onion',
+  'garlic',
+  'chives',
+  'leek',
+  'shallot',
+  'onion powder',
+  'garlic powder',
+]);
+
+function normalizeToHazardId(ingredient: string): string | null {
+  const normalized = normalizeInput(ingredient);
+  if (!normalized) return null;
+  
+  // Direct match
+  if (hazardAliasMap[normalized]) {
+    return hazardAliasMap[normalized];
   }
-  for (const e of entries) {
-    if (e.verdict === 'VET FIRST') return 'VET FIRST';
+  
+  // Check aliases (normalize each alias key)
+  for (const [alias, hazardId] of Object.entries(hazardAliasMap)) {
+    if (normalizeInput(alias) === normalized) {
+      return hazardId;
+    }
   }
-  return 'SAFE';
+  
+  return null;
+}
+
+function isInToxicSet(
+  entry: FoodEntry,
+  toxicSet: Set<string>,
+  aliasedIngredient?: string,
+): boolean {
+  const normalizedId = normalizeInput(entry.id);
+  const normalizedName = normalizeInput(entry.canonicalName);
+  
+  // Check entry fields
+  if (
+    toxicSet.has(normalizedId) ||
+    toxicSet.has(normalizedName) ||
+    entry.synonyms.some((s) => toxicSet.has(normalizeInput(s)))
+  ) {
+    return true;
+  }
+  
+  // Check aliased ingredient string
+  if (aliasedIngredient && toxicSet.has(aliasedIngredient)) {
+    return true;
+  }
+  
+  return false;
+}
+
+function aggregateVerdict(
+  normalizedInput: string,
+  entries: FoodEntry[],
+  ingredientAliases: Map<FoodEntry, string>,
+): { verdict: VerdictType; downgraded: boolean } {
+  const toxicDrivers = entries.filter((e) => e.verdict === 'TOXIC');
+  
+  if (toxicDrivers.length === 0) {
+    // No toxic ingredients, check for VET FIRST, then SAFE
+    for (const e of entries) {
+      if (e.verdict === 'VET FIRST') return { verdict: 'VET FIRST', downgraded: false };
+    }
+    return { verdict: 'SAFE', downgraded: false };
+  }
+
+  // Check if any toxic driver is in alwaysToxicSet
+  // Include aliased ingredient strings in the check
+  const hasAlwaysToxic = toxicDrivers.some((e) => {
+    const aliased = ingredientAliases.get(e);
+    return isInToxicSet(e, alwaysToxicSet, aliased ?? undefined);
+  });
+
+  if (hasAlwaysToxic) {
+    return { verdict: 'TOXIC', downgraded: false };
+  }
+
+  // Check if it's a mixed dish and all toxic drivers are additive
+  if (isMixedDish(normalizedInput)) {
+    const allAdditive = toxicDrivers.every((e) => {
+      const aliased = ingredientAliases.get(e);
+      return isInToxicSet(e, additiveToxicSet, aliased ?? undefined);
+    });
+
+    if (allAdditive) {
+      return { verdict: 'VET FIRST', downgraded: true };
+    }
+  }
+
+  return { verdict: 'TOXIC', downgraded: false };
 }
 
 function buildExplanationFromIngredients(
   mapped: FoodEntry[],
   decomposition: DecompositionResponse,
+  downgraded: boolean,
 ): string {
   // Keep this short; Verdict screen is non-scroll.
   const uniqueCanonical = Array.from(
     new Map(mapped.map((m) => [m.canonicalName, m])).values(),
   );
+
+  if (downgraded) {
+    // Special case: mixed dish with only additive toxic ingredients
+    return 'This food is generally safe, but prepared dishes often include onion or garlic. Avoid feeding unless ingredients are confirmed.';
+  }
 
   const toxic = uniqueCanonical.filter((e) => e.verdict === 'TOXIC').map((e) => e.canonicalName);
   const vetFirst = uniqueCanonical
@@ -214,9 +365,48 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
     }
 
     // 5) Map ingredients to dataset entries (ignore unknowns)
+    // Track aliased ingredients for hazard detection
+    const ingredientAliases = new Map<FoodEntry, string>();
+    const allHazardIds = new Set<string>();
+    
+    // First pass: check all decomposed ingredients for hazard aliases
+    for (const ing of decomposition.likelyIngredients ?? []) {
+      const hazardId = normalizeToHazardId(ing);
+      if (hazardId) {
+        allHazardIds.add(hazardId);
+      }
+    }
+    
     const mapped = (decomposition.likelyIngredients ?? [])
-      .map((ing) => lookupDatasetEntry(ing))
-      .filter((x): x is FoodEntry => !!x);
+      .map((ing) => {
+        // First try direct lookup
+        const entry = lookupDatasetEntry(ing);
+        if (entry) return { entry, aliased: null as string | null };
+        
+        // Check if ingredient matches a hazard alias
+        const hazardId = normalizeToHazardId(ing);
+        if (hazardId) {
+          // Look up the hazard by its ID
+          const hazardEntry = lookupDatasetEntry(hazardId);
+          if (hazardEntry) {
+            return { entry: hazardEntry, aliased: hazardId };
+          }
+        }
+        
+        return null;
+      })
+      .filter((x): x is { entry: FoodEntry; aliased: string | null } => !!x)
+      .map(({ entry, aliased }) => {
+        if (aliased) {
+          ingredientAliases.set(entry, aliased);
+        }
+        return entry;
+      });
+    
+    // Check if any decomposed ingredient matches an always-toxic hazard
+    const hasAlwaysToxicHazard = Array.from(allHazardIds).some((hazardId) =>
+      alwaysToxicSet.has(hazardId),
+    );
 
     // If ingredient coverage is weak, fall back to UNKNOWN / VET FIRST
     if (mapped.length < 1) {
@@ -226,18 +416,44 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
       return fallback;
     }
 
+    // __DEV__ logs for chocolate cake
+    if (__DEV__ && normalizedInput.includes('chocolate') && normalizedInput.includes('cake')) {
+      const toxicDrivers = mapped.filter((e) => e.verdict === 'TOXIC');
+      logDev(
+        'hazard_detection',
+        `input="${normalizedInput}" decomposed_ingredients=[${(decomposition.likelyIngredients ?? []).join(', ')}] mapped_ids=[${mapped.map((e) => e.id).join(', ')}] toxic_drivers=[${toxicDrivers.map((e) => e.id).join(', ')}] detected_hazards=[${Array.from(allHazardIds).join(', ')}]`,
+      );
+    }
+
     // 6) Aggregate verdicts conservatively
-    const verdict = aggregateVerdict(mapped);
+    // If any always-toxic hazard detected in decomposed ingredients, force TOXIC
+    if (hasAlwaysToxicHazard) {
+      logDev(
+        'mapped_count_verdict',
+        `mapped=${mapped.length} verdict=TOXIC always_toxic_hazard=true input="${normalizedInput}" species=${species}`,
+      );
+      const result: FoodLookupResult = capResult({
+        verdict: 'TOXIC',
+        canonicalName: normalizedInput,
+        explanation: buildExplanationFromIngredients(mapped, decomposition, false),
+        action: baseActionForVerdict('TOXIC'),
+        color: getVerdictColor('TOXIC'),
+      });
+      await setCachedResult(normalizedInput, species, result);
+      return result;
+    }
+    
+    const { verdict, downgraded } = aggregateVerdict(normalizedInput, mapped, ingredientAliases);
     logDev(
       'mapped_count_verdict',
-      `mapped=${mapped.length} verdict=${verdict.replace(' ', '_')} input="${normalizedInput}" species=${species}`,
+      `mapped=${mapped.length} verdict=${verdict.replace(' ', '_')}${downgraded ? ' downgraded=true' : ''} input="${normalizedInput}" species=${species}`,
     );
 
     // 7) Build result
     const result: FoodLookupResult = capResult({
       verdict,
       canonicalName: normalizedInput,
-      explanation: buildExplanationFromIngredients(mapped, decomposition),
+      explanation: buildExplanationFromIngredients(mapped, decomposition, downgraded),
       action: baseActionForVerdict(verdict),
       color: getVerdictColor(verdict),
     });

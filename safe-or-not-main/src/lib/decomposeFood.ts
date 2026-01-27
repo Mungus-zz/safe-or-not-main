@@ -332,6 +332,10 @@ export function parseAndValidateDecomposition(raw: string): DecompositionRespons
 }
 
 export async function decomposeFood(userInput: string): Promise<DecompositionResponse | null> {
+  if (__DEV__) {
+    console.log(`DECOMP_ENTER input="${userInput}"`);
+  }
+
   try {
     const expectedNormalized = normalizeUserInputForCompare(userInput);
 
@@ -352,7 +356,22 @@ export async function decomposeFood(userInput: string): Promise<DecompositionRes
     }
 
     const messages = buildDecomposeMessages(userInput);
-    const raw = await callDeepSeek(messages);
+    
+    if (__DEV__) {
+      console.log('DECOMP_CALLING_MODEL');
+    }
+
+    let raw: string;
+    try {
+      raw = await callDeepSeek(messages);
+    } catch (err) {
+      if (__DEV__) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        console.log(`DECOMP_REJECT:call_failed error="${errorMsg}"`);
+      }
+      return null;
+    }
+
     if (__DEV__) {
       const preview = raw.slice(0, 120).replace(/\s+/g, ' ');
       console.log(`DECOMP_RAW_PREVIEW:${preview}`);

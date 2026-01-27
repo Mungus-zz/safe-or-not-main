@@ -227,9 +227,9 @@
       "id": "cocoa-baked-goods",
       "canonicalName": "Chocolate baked goods",
       "synonyms": ["brownie", "cookie chocolate", "chocolate cake", "hot chocolate"],
-      "verdict": "VET FIRST",
-      "explanation": "Risk depends on chocolate type, amount consumed, and pet size.",
-      "action": "Contact a vet or poison control with product details and estimated amount eaten.",
+      "verdict": "TOXIC",
+      "explanation": "Chocolate and cocoa can be toxic to dogs, including in baked goods.",
+      "action": "Contact a vet or poison control immediately.",
       "species": ["dog", "cat"],
       "sources": ["ASPCA Poison Control"]
     },
