@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Animated,
   View,
@@ -11,6 +11,7 @@ import {
   Platform,
   Keyboard,
   FlatList,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -23,6 +24,17 @@ import {
 import { useFadeUpMotion } from '@/src/lib/motion';
 import { smartFoodLookup } from '@/src/lib/smartFoodLookup';
 
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delayMs);
+    return () => clearTimeout(id);
+  }, [value, delayMs]);
+
+  return debounced;
+}
+
 export default function InputScreen() {
   const [foodInput, setFoodInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -30,18 +42,23 @@ export default function InputScreen() {
   const insets = useSafeAreaInsets();
   const screenMotion = useFadeUpMotion();
 
+  const debouncedQuery = useDebouncedValue(foodInput, 150);
+
+  useEffect(() => {
+    const next = debouncedQuery.trim();
+    if (!next) {
+      setSuggestions([]);
+      return;
+    }
+    const nextSuggestions = getFoodSuggestions(next, 12);
+    setSuggestions(nextSuggestions);
+  }, [debouncedQuery]);
+
   const isButtonDisabled = !foodInput.trim();
   const isCheckDisabled = isButtonDisabled || isLoading;
 
   const handleChangeText = (text: string) => {
     setFoodInput(text);
-    const next = text.trim();
-    if (!next) {
-      setSuggestions([]);
-      return;
-    }
-    const nextSuggestions = getFoodSuggestions(next, 8);
-    setSuggestions(nextSuggestions);
   };
 
   const handleSelectSuggestion = (suggestion: FoodSuggestion) => {
@@ -80,13 +97,31 @@ export default function InputScreen() {
     const chip = getChipStyleForVerdict(
       s.verdict as 'SAFE' | 'TOXIC' | 'VET FIRST' | 'VET_FIRST',
     );
+
+    const query = foodInput.trim();
+    const lowerLabel = s.label.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+    const prefixLen =
+      query && lowerLabel.startsWith(lowerQuery) ? query.length : 0;
+
     return (
       <TouchableOpacity
         style={styles.suggestionRow}
         onPress={() => handleSelectSuggestion(s)}
         activeOpacity={0.9}
       >
-        <Text style={styles.suggestionLabel}>{s.label}</Text>
+        <Text style={styles.suggestionLabel}>
+          {prefixLen > 0 ? (
+            <>
+              <Text style={styles.suggestionLabelHighlight}>
+                {s.label.slice(0, prefixLen)}
+              </Text>
+              <Text>{s.label.slice(prefixLen)}</Text>
+            </>
+          ) : (
+            s.label
+          )}
+        </Text>
         <View style={[styles.suggestionChip, { backgroundColor: chip.bg }]}>
           <Text style={[styles.suggestionChipText, { color: chip.text }]}>
             {s.verdict}
@@ -107,68 +142,89 @@ export default function InputScreen() {
       </TouchableOpacity>
     ) : null;
 
+  const trimmedInput = foodInput.trim();
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <Animated.View
-        style={[styles.inner, { paddingTop: insets.top + 24 }, screenMotion.animatedStyle]}
-      >
-        <Text style={styles.header}>Safe or Not</Text>
+      <TouchableWithoutFeedback onPress={() => setSuggestions([])}>
+        <Animated.View
+          style={[styles.inner, { paddingTop: insets.top + 24 }, screenMotion.animatedStyle]}
+        >
+          <Text style={styles.header}>Safe or Not</Text>
 
-        <View style={styles.content}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Type a food"
-              placeholderTextColor={Colors.textMuted}
-              value={foodInput}
-              onChangeText={handleChangeText}
-              autoCapitalize="none"
-              autoCorrect={false}
-              testID="food-input"
-            />
-          </View>
-
-          {suggestions.length > 0 && (
-            <View style={styles.suggestionsContainer}>
-              <FlatList
-                data={suggestions}
-                keyExtractor={(item) => `${item.id}-${item.label}`}
-                renderItem={renderSuggestionRow}
-                ListFooterComponent={listFooterComponent}
-                keyboardShouldPersistTaps="handled"
-                style={styles.suggestionsList}
-                scrollEnabled={true}
-                nestedScrollEnabled={true}
+          <View style={styles.content}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Type a food"
+                placeholderTextColor={Colors.textMuted}
+                value={foodInput}
+                onChangeText={handleChangeText}
+                autoCapitalize="none"
+                autoCorrect={false}
+                testID="food-input"
+                returnKeyType="search"
+                onSubmitEditing={() => {
+                  const top = suggestions[0];
+                  const isStrongMatch =
+                    top && top.matchType === 'canonical_prefix';
+                  if (suggestions.length > 0 && isStrongMatch) {
+                    handleSelectSuggestion(top);
+                  } else {
+                    handleCheck();
+                  }
+                }}
               />
             </View>
-          )}
 
-          <Text style={styles.helperText}>For dogs and cats</Text>
+            {suggestions.length > 0 && trimmedInput.length >= 1 && (
+              <View style={styles.suggestionsContainer}>
+                <FlatList
+                  data={suggestions}
+                  keyExtractor={(item) => `${item.id}-${item.label}`}
+                  renderItem={renderSuggestionRow}
+                  ListFooterComponent={listFooterComponent}
+                  keyboardShouldPersistTaps="handled"
+                  style={styles.suggestionsList}
+                  scrollEnabled={true}
+                  nestedScrollEnabled={true}
+                />
+              </View>
+            )}
 
-          <TouchableOpacity
-            style={[
-              styles.button,
-              isCheckDisabled && styles.buttonDisabled,
-            ]}
-            onPress={handleCheck}
-            disabled={isCheckDisabled}
-            activeOpacity={0.88}
-            testID="check-button"
-          >
-            <Text
+            {trimmedInput.length >= 2 && suggestions.length === 0 && (
+              <Text style={styles.emptyHelperText}>
+                No matches in the list. You can still check any food.
+              </Text>
+            )}
+
+            <Text style={styles.helperText}>For dogs and cats</Text>
+
+            <TouchableOpacity
               style={[
-                styles.buttonText,
-                isCheckDisabled && styles.buttonTextDisabled,
+                styles.button,
+                isCheckDisabled && styles.buttonDisabled,
               ]}
+              onPress={handleCheck}
+              disabled={isCheckDisabled}
+              activeOpacity={0.88}
+              testID="check-button"
             >
-              {isLoading ? 'Checking...' : "See if it's safe"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
+              <Text
+                style={[
+                  styles.buttonText,
+                  isCheckDisabled && styles.buttonTextDisabled,
+                ]}
+              >
+                {isLoading ? 'Checking...' : "See if it's safe"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 }
@@ -226,6 +282,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
+  emptyHelperText: {
+    fontSize: 13,
+    color: Colors.textMuted,
+    marginBottom: 8,
+  },
   suggestionsContainer: {
     borderRadius: Radii.input,
     backgroundColor: Colors.inputBackground,
@@ -251,6 +312,10 @@ const styles = StyleSheet.create({
     color: Colors.text,
     flexShrink: 1,
     marginRight: 12,
+  },
+  suggestionLabelHighlight: {
+    fontWeight: '600',
+    color: Colors.text,
   },
   suggestionChip: {
     borderRadius: Radii.pill ?? Radii.button,

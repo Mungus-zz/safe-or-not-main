@@ -10,6 +10,7 @@ export type FoodSuggestion = {
   id: string;
   canonicalName: string;
   verdict: VerdictType;
+  matchType: 'canonical_prefix' | 'synonym_prefix';
 };
 
 type IndexedLabel = {
@@ -58,44 +59,54 @@ const indexedLabels: IndexedLabel[] = (() => {
   return entries;
 })();
 
-export function getFoodSuggestions(query: string, limit = 8): FoodSuggestion[] {
+export function getFoodSuggestions(query: string, limit = 12): FoodSuggestion[] {
   const normalizedQuery = normalizeUserInputForCompare(query);
   if (!normalizedQuery) return [];
 
-  const byId = new Map<string, FoodSuggestion>();
+  const seenIds = new Set<string>();
+  const canonicalSuggestions: FoodSuggestion[] = [];
+  const synonymSuggestions: FoodSuggestion[] = [];
 
-  // First, collect canonical matches
+  // Canonical prefix matches first
   for (const entry of indexedLabels) {
     if (entry.source !== 'canonical') continue;
     if (!entry.normalizedLabel.startsWith(normalizedQuery)) continue;
-    if (byId.has(entry.id)) continue;
+    if (seenIds.has(entry.id)) continue;
 
-    byId.set(entry.id, {
+    canonicalSuggestions.push({
       label: entry.label,
       id: entry.id,
       canonicalName: entry.canonicalName,
       verdict: entry.verdict,
+      matchType: 'canonical_prefix',
     });
-    if (byId.size >= limit) break;
+    seenIds.add(entry.id);
   }
 
-  if (byId.size < limit) {
-    // Then, collect synonym matches for remaining slots
-    for (const entry of indexedLabels) {
-      if (entry.source !== 'synonym') continue;
-      if (!entry.normalizedLabel.startsWith(normalizedQuery)) continue;
-      if (byId.has(entry.id)) continue;
+  // Then synonym prefix matches for remaining ids
+  for (const entry of indexedLabels) {
+    if (entry.source !== 'synonym') continue;
+    if (!entry.normalizedLabel.startsWith(normalizedQuery)) continue;
+    if (seenIds.has(entry.id)) continue;
 
-      byId.set(entry.id, {
-        label: entry.label,
-        id: entry.id,
-        canonicalName: entry.canonicalName,
-        verdict: entry.verdict,
-      });
-      if (byId.size >= limit) break;
-    }
+    synonymSuggestions.push({
+      label: entry.label,
+      id: entry.id,
+      canonicalName: entry.canonicalName,
+      verdict: entry.verdict,
+      matchType: 'synonym_prefix',
+    });
+    seenIds.add(entry.id);
   }
 
-  return Array.from(byId.values());
+  // Rank within each group by shorter canonicalName first
+  const byCanonicalLength = (a: FoodSuggestion, b: FoodSuggestion) =>
+    a.canonicalName.length - b.canonicalName.length;
+
+  canonicalSuggestions.sort(byCanonicalLength);
+  synonymSuggestions.sort(byCanonicalLength);
+
+  const combined = [...canonicalSuggestions, ...synonymSuggestions];
+  return combined.slice(0, limit);
 }
 
