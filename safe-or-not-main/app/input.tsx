@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  FlatList,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -75,6 +76,37 @@ export default function InputScreen() {
     }
   };
 
+  const renderSuggestionRow = ({ item: s }: { item: FoodSuggestion }) => {
+    const chip = getChipStyleForVerdict(
+      s.verdict as 'SAFE' | 'TOXIC' | 'VET FIRST' | 'VET_FIRST',
+    );
+    return (
+      <TouchableOpacity
+        style={styles.suggestionRow}
+        onPress={() => handleSelectSuggestion(s)}
+        activeOpacity={0.9}
+      >
+        <Text style={styles.suggestionLabel}>{s.label}</Text>
+        <View style={[styles.suggestionChip, { backgroundColor: chip.bg }]}>
+          <Text style={[styles.suggestionChipText, { color: chip.text }]}>
+            {s.verdict}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const listFooterComponent =
+    !!foodInput.trim() ? (
+      <TouchableOpacity
+        style={styles.searchRow}
+        onPress={handleSearchRowPress}
+        activeOpacity={0.9}
+      >
+        <Text style={styles.searchRowText}>Search "{foodInput.trim()}"</Text>
+      </TouchableOpacity>
+    ) : null;
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -101,47 +133,16 @@ export default function InputScreen() {
 
           {suggestions.length > 0 && (
             <View style={styles.suggestionsContainer}>
-              {suggestions.map((s) => (
-                <TouchableOpacity
-                  key={s.id}
-                  style={styles.suggestionRow}
-                  onPress={() => handleSelectSuggestion(s)}
-                  activeOpacity={0.9}
-                >
-                  <Text style={styles.suggestionLabel}>{s.label}</Text>
-                  {(() => {
-                    const chip = getChipStyleForVerdict(
-                      s.verdict as 'SAFE' | 'TOXIC' | 'VET FIRST' | 'VET_FIRST',
-                    );
-                    return (
-                      <View
-                        style={[
-                          styles.suggestionChip,
-                          { backgroundColor: chip.bg },
-                        ]}
-                      >
-                        <Text
-                          style={[
-                            styles.suggestionChipText,
-                            { color: chip.text },
-                          ]}
-                        >
-                          {s.verdict}
-                        </Text>
-                      </View>
-                    );
-                  })()}
-                </TouchableOpacity>
-              ))}
-              {!!foodInput.trim() && (
-                <TouchableOpacity
-                  style={styles.searchRow}
-                  onPress={handleSearchRowPress}
-                  activeOpacity={0.9}
-                >
-                  <Text style={styles.searchRowText}>Search "{foodInput.trim()}"</Text>
-                </TouchableOpacity>
-              )}
+              <FlatList
+                data={suggestions}
+                keyExtractor={(item) => `${item.id}-${item.label}`}
+                renderItem={renderSuggestionRow}
+                ListFooterComponent={listFooterComponent}
+                keyboardShouldPersistTaps="handled"
+                style={styles.suggestionsList}
+                scrollEnabled={true}
+                nestedScrollEnabled={true}
+              />
             </View>
           )}
 
@@ -229,8 +230,12 @@ const styles = StyleSheet.create({
     borderRadius: Radii.input,
     backgroundColor: Colors.inputBackground,
     marginBottom: 12,
+    maxHeight: 280,
     ...(Shadows.input ?? {}),
     overflow: 'hidden',
+  },
+  suggestionsList: {
+    maxHeight: 280,
   },
   suggestionRow: {
     flexDirection: 'row',
