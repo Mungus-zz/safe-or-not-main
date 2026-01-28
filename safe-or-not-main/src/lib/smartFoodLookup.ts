@@ -633,9 +633,9 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
 
         // If ingredient coverage is weak, fall back to LLM
         if (mapped.length < 1) {
+          usdaHasIngredients = false;
           if (__DEV__) {
             console.log('SFL:usda_has_ingredients=false reason=no_mapped_ingredients');
-            usdaHasIngredients = false;
           }
         } else {
           // Use USDA ingredients - build result
