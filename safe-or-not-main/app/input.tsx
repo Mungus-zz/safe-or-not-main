@@ -9,22 +9,49 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Colors from '@/constants/colors';
 import { Radii, Shadows } from '@/constants/theme';
+import {
+  getFoodSuggestions,
+  type FoodSuggestion,
+} from '@/src/lib/autocompleteFoods';
 import { useFadeUpMotion } from '@/src/lib/motion';
 import { smartFoodLookup } from '@/src/lib/smartFoodLookup';
 
 export default function InputScreen() {
   const [foodInput, setFoodInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<FoodSuggestion[]>([]);
   const insets = useSafeAreaInsets();
   const screenMotion = useFadeUpMotion();
 
   const isButtonDisabled = !foodInput.trim();
   const isCheckDisabled = isButtonDisabled || isLoading;
+
+  const handleChangeText = (text: string) => {
+    setFoodInput(text);
+    const next = text.trim();
+    if (!next) {
+      setSuggestions([]);
+      return;
+    }
+    const nextSuggestions = getFoodSuggestions(next, 8);
+    setSuggestions(nextSuggestions);
+  };
+
+  const handleSelectSuggestion = (suggestion: FoodSuggestion) => {
+    setFoodInput(suggestion.label);
+    setSuggestions([]);
+    Keyboard.dismiss();
+  };
+
+  const handleSearchRowPress = () => {
+    setSuggestions([]);
+  };
 
   const handleCheck = async () => {
     if (isLoading) return;
@@ -65,12 +92,58 @@ export default function InputScreen() {
               placeholder="Type a food"
               placeholderTextColor={Colors.textMuted}
               value={foodInput}
-              onChangeText={setFoodInput}
+              onChangeText={handleChangeText}
               autoCapitalize="none"
               autoCorrect={false}
               testID="food-input"
             />
           </View>
+
+          {suggestions.length > 0 && (
+            <View style={styles.suggestionsContainer}>
+              {suggestions.map((s) => (
+                <TouchableOpacity
+                  key={s.id}
+                  style={styles.suggestionRow}
+                  onPress={() => handleSelectSuggestion(s)}
+                  activeOpacity={0.9}
+                >
+                  <Text style={styles.suggestionLabel}>{s.label}</Text>
+                  {(() => {
+                    const chip = getChipStyleForVerdict(
+                      s.verdict as 'SAFE' | 'TOXIC' | 'VET FIRST' | 'VET_FIRST',
+                    );
+                    return (
+                      <View
+                        style={[
+                          styles.suggestionChip,
+                          { backgroundColor: chip.bg },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.suggestionChipText,
+                            { color: chip.text },
+                          ]}
+                        >
+                          {s.verdict}
+                        </Text>
+                      </View>
+                    );
+                  })()}
+                </TouchableOpacity>
+              ))}
+              {!!foodInput.trim() && (
+                <TouchableOpacity
+                  style={styles.searchRow}
+                  onPress={handleSearchRowPress}
+                  activeOpacity={0.9}
+                >
+                  <Text style={styles.searchRowText}>Search "{foodInput.trim()}"</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
 
           <Text style={styles.helperText}>For dogs and cats</Text>
 
@@ -99,6 +172,21 @@ export default function InputScreen() {
   );
 }
 
+function getChipStyleForVerdict(
+  verdict: 'SAFE' | 'TOXIC' | 'VET FIRST' | 'VET_FIRST',
+): { bg: string; text: string } {
+  switch (verdict) {
+    case 'SAFE':
+      return { bg: Colors.safe, text: Colors.text };
+    case 'TOXIC':
+      return { bg: Colors.toxic, text: Colors.text };
+    case 'VET FIRST':
+    case 'VET_FIRST':
+    default:
+      return { bg: Colors.vetFirst, text: Colors.text };
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -118,7 +206,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inputContainer: {
-    marginBottom: 12,
+    marginBottom: 8,
   },
   input: {
     borderWidth: 2,
@@ -136,6 +224,49 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     textAlign: 'center',
     marginBottom: 16,
+  },
+  suggestionsContainer: {
+    borderRadius: Radii.input,
+    backgroundColor: Colors.inputBackground,
+    marginBottom: 12,
+    ...(Shadows.input ?? {}),
+    overflow: 'hidden',
+  },
+  suggestionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.inputBorder,
+  },
+  suggestionLabel: {
+    fontSize: 14,
+    color: Colors.text,
+    flexShrink: 1,
+    marginRight: 12,
+  },
+  suggestionChip: {
+    borderRadius: Radii.pill ?? Radii.button,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    minWidth: 70,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  suggestionChipText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: Colors.background,
+  },
+  searchRow: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  searchRowText: {
+    fontSize: 14,
+    color: Colors.primary,
   },
   button: {
     backgroundColor: Colors.primary,
