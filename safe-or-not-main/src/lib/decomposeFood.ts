@@ -365,9 +365,12 @@ export async function decomposeFood(userInput: string): Promise<DecompositionRes
     try {
       raw = await callDeepSeek(messages);
     } catch (err) {
+      // Fail fast - return null immediately without additional processing
       if (__DEV__) {
+        // Avoid printing full error bodies - limit to first 100 chars
         const errorMsg = err instanceof Error ? err.message : String(err);
-        console.log(`DECOMP_REJECT:call_failed error="${errorMsg}"`);
+        const preview = errorMsg.slice(0, 100);
+        console.log(`DECOMP_REJECT:call_failed error="${preview}${errorMsg.length > 100 ? '...' : ''}"`);
       }
       return null;
     }
@@ -407,25 +410,37 @@ export async function decomposeFood(userInput: string): Promise<DecompositionRes
       return null;
     }
 
-    const expectedTokens = expectedNormalized.split(' ').filter(Boolean);
-    const modelTokens = modelNormalized.split(' ').filter(Boolean);
-    if (expectedTokens.length === 0 || modelTokens.length === 0) {
+    // Relaxed name guard: allow exact match, small typos, or brand prefix cases
+    const isExactMatch = expectedNormalized === modelNormalized;
+    const lengthDiff = Math.abs(expectedNormalized.length - modelNormalized.length);
+    const isStartsWithMatch =
+      (expectedNormalized.startsWith(modelNormalized) ||
+        modelNormalized.startsWith(expectedNormalized)) &&
+      lengthDiff <= 2;
+
+    // Allow modelNormalized to be contained within expectedNormalized as a whole word substring
+    // (e.g., "oscar meyer hot dog" -> "hot dog", "kraft mac and cheese" -> "mac and cheese")
+    let isWholeWordSubstring = false;
+    if (!isExactMatch && !isStartsWithMatch) {
+      const index = expectedNormalized.indexOf(modelNormalized);
+      if (index !== -1) {
+        // Check if it's a whole word match (word boundaries before and after)
+        const beforeChar = index === 0 ? ' ' : expectedNormalized[index - 1];
+        const afterIndex = index + modelNormalized.length;
+        const afterChar =
+          afterIndex >= expectedNormalized.length ? ' ' : expectedNormalized[afterIndex];
+        const isWholeWord = beforeChar === ' ' && afterChar === ' ';
+        const lengthDiffForSubstring = expectedNormalized.length - modelNormalized.length;
+        isWholeWordSubstring = isWholeWord && lengthDiffForSubstring <= 20;
+      }
+    }
+
+    if (!isExactMatch && !isStartsWithMatch && !isWholeWordSubstring) {
       logDevReject(
         'name_guard_failed',
         `expected="${expectedNormalized}" model="${modelNormalized}"`,
       );
       return null;
-    }
-
-    const modelSet = new Set(modelTokens);
-    for (const t of expectedTokens) {
-      if (!modelSet.has(t)) {
-        logDevReject(
-          'name_guard_failed',
-          `expected="${expectedNormalized}" model="${modelNormalized}"`,
-        );
-        return null;
-      }
     }
 
     parsed.normalizedName = expectedNormalized;

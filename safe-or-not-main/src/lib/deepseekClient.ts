@@ -53,8 +53,8 @@ async function postWithTimeout(url: string, init: RequestInit, timeoutMs: number
 }
 
 function shouldRetry(err: unknown, res?: Response): boolean {
-  // Retry once on transient server errors.
-  if (res) return res.status >= 500 || res.status === 429;
+  // Retry once on transient server errors (but not 429 rate limit - fail fast).
+  if (res) return res.status >= 500;
 
   // Retry only on abort timeout errors.
   return isAbortError(err);
@@ -63,7 +63,9 @@ function shouldRetry(err: unknown, res?: Response): boolean {
 async function readErrorBody(res: Response): Promise<string> {
   try {
     const text = await res.text();
-    return text ? ` Response body: ${text}` : '';
+    // Limit error body preview to avoid printing full bodies
+    const preview = text ? text.slice(0, 100) : '';
+    return preview ? ` Response body preview: ${preview}${text.length > 100 ? '...' : ''}` : '';
   } catch {
     return '';
   }
@@ -114,6 +116,15 @@ export async function callDeepSeek(
       const durationMs = Date.now() - startTime;
 
       if (!res.ok) {
+        // Do not retry on 429 (rate limit) - fail fast
+        if (res.status === 429) {
+          if (__DEV__) {
+            console.log(
+              `OPENROUTER_CALL duration_ms=${durationMs} model=${model} retry=${isRetry} status=429 rate_limit`,
+            );
+          }
+          throw new Error(`OpenRouter rate limit (429)`);
+        }
         if (attempt === 0 && shouldRetry(undefined, res)) {
           if (__DEV__) {
             console.log(

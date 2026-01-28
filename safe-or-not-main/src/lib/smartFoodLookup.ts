@@ -8,6 +8,9 @@ import {
 } from '@/src/lib/decompositionCache';
 import { getCachedResult, setCachedResult } from '@/src/lib/lookupResultCache';
 import { foodLookup, normalizeInput, type FoodLookupResult } from '@/src/lib/foodLookup';
+import { usdaSearch, usdaFoodDetails } from '@/src/lib/usdaClient';
+import { extractIngredientsText } from '@/src/lib/usdaIngredients';
+import { getUsdaCached, setUsdaCached } from '@/src/lib/usdaCache';
 
 type Species = 'dog' | 'cat';
 type VerdictType = FoodLookupResult['verdict'];
@@ -121,6 +124,106 @@ function lookupDatasetEntry(raw: string): FoodEntry | null {
   const key = normalizeInput(raw);
   if (!key) return null;
   return byNormalizedKey.get(key) ?? null;
+}
+
+function parseIngredientsText(ingredientsText: string): string[] {
+  // Remove parenthetical contents (e.g., "(contains 2% or less)", "(less than 1%)")
+  let cleaned = ingredientsText.replace(/\([^)]*\)/g, ' ');
+  
+  // Split on commas and semicolons
+  const parts = cleaned.split(/[,;]/);
+  
+  // Common boilerplate phrases to remove (case-insensitive, word boundaries)
+  const boilerplatePatterns = [
+    /\bcontains\b/gi,
+    /\bless than\b/gi,
+    /\bmore than\b/gi,
+    /\bpercent\b/gi,
+    /%/g,
+    /\band\/or\b/gi,
+    /\bor\b/gi, // Standalone "or" only
+    /\bwith\b/gi,
+    /\badded\b/gi,
+  ];
+  
+  const tokens = new Set<string>();
+  
+  for (const part of parts) {
+    // Remove boilerplate phrases
+    let phrase = part;
+    for (const pattern of boilerplatePatterns) {
+      phrase = phrase.replace(pattern, ' ');
+    }
+    
+    // Normalize: trim, collapse whitespace, remove punctuation
+    const normalized = normalizeInput(phrase);
+    if (normalized && normalized.length >= 2) {
+      tokens.add(normalized);
+      
+      // Also add the first word of each ingredient phrase as a token
+      const firstWord = normalized.split(' ')[0];
+      if (firstWord && firstWord.length >= 2 && firstWord !== normalized) {
+        tokens.add(firstWord);
+      }
+    }
+  }
+  
+  return Array.from(tokens);
+}
+
+function pickBestUsdaCandidate(results: Awaited<ReturnType<typeof usdaSearch>>): {
+  fdcId: number;
+  description: string;
+  dataType: string;
+  brandName?: string;
+} | null {
+  if (results.length === 0) return null;
+
+  // Count results by dataType for logging
+  if (__DEV__) {
+    const counts: Record<string, number> = {};
+    for (const result of results) {
+      counts[result.dataType] = (counts[result.dataType] || 0) + 1;
+    }
+    const branded = counts['Branded'] || 0;
+    const foundation = counts['Foundation'] || 0;
+    const sr = counts['SR Legacy'] || 0;
+    const survey = counts['Survey (FNDDS)'] || 0;
+    console.log(
+      `USDA_RESULTS branded=${branded} foundation=${foundation} sr=${sr} survey=${survey}`,
+    );
+  }
+
+  // Priority by dataType (do not require brandName to treat as Branded):
+  // Branded (highest) > Foundation > SR Legacy > Survey (FNDDS) > others
+  const priorityOrder = ['Branded', 'Foundation', 'SR Legacy', 'Survey (FNDDS)'] as const;
+
+  const rankFor = (dataType: string): number => {
+    const idx = priorityOrder.indexOf(dataType as (typeof priorityOrder)[number]);
+    return idx === -1 ? priorityOrder.length : idx;
+  };
+
+  let best = results[0];
+  let bestRank = rankFor(best.dataType);
+
+  for (let i = 1; i < results.length; i += 1) {
+    const candidate = results[i];
+    const rank = rankFor(candidate.dataType);
+    if (rank < bestRank) {
+      best = candidate;
+      bestRank = rank;
+    }
+  }
+
+  if (__DEV__) {
+    console.log(
+      `USDA_PICK fdcId=${best.fdcId} dataType=${best.dataType} description=${best.description} brandName=${
+        best.brandName ?? null
+      }`,
+    );
+  }
+
+  return best;
 }
 
 const MIXED_DISH_TOKENS = [
@@ -326,139 +429,420 @@ function buildExplanationFromIngredients(
  * - Aggregates verdicts conservatively
  */
 export async function smartFoodLookup(input: string, species: Species): Promise<FoodLookupResult> {
-  const normalizedInput = normalizeUserInputForCompare(input);
+  // 1) Normalize input once at the top
+  let normalizedInput = normalizeUserInputForCompare(input);
+  const startTime = Date.now();
 
   try {
-    // 0) Final-result cache (fast path)
-    const cached = await getCachedResult(normalizedInput, species);
-    if (cached) {
-      logDev('result_cache_hit', `input="${normalizedInput}" species=${species}`);
-      return capResult(cached);
+    // 2) Typo correction immediately (before any caching logic)
+    if (normalizedInput.length >= 5 && !normalizedInput.includes(' ')) {
+      const corrections: string[] = [];
+      if (normalizedInput.endsWith('e')) {
+        corrections.push(normalizedInput.slice(0, -1));
+      }
+      if (normalizedInput.endsWith('s')) {
+        corrections.push(normalizedInput.slice(0, -1));
+      }
+      for (const corrected of corrections) {
+        if (datasetMatchExists(corrected)) {
+          if (__DEV__) {
+            console.log('SFL:stage=typo');
+            console.log(`SFL:typo_corrected from="${normalizedInput}" to="${corrected}"`);
+          }
+          // Update normalizedInput to corrected version for all subsequent operations
+          normalizedInput = corrected;
+          break; // Use first correction that matches
+        }
+      }
     }
 
-    // 2) Attempt exact + synonym match via existing lookup
-    if (datasetMatchExists(input)) {
+    // 3) Deterministic exact + synonym match (after typo correction, before cache)
+    if (datasetMatchExists(normalizedInput)) {
+      if (__DEV__) console.log('SFL:stage=exact');
       logDev('exact_match', `input="${normalizedInput}" species=${species}`);
-      const direct = capResult(foodLookup(input));
+      const direct = capResult(foodLookup(normalizedInput));
       await setCachedResult(normalizedInput, species, direct);
+      if (__DEV__) {
+        const totalMs = Date.now() - startTime;
+        console.log(`SFL:total_ms=${totalMs}`);
+      }
       return direct;
     }
 
-    // 3) Cache lookup
-    let decomposition = await getCachedDecomposition(normalizedInput, species);
-    if (decomposition) {
-      logDev('decomp_cache_hit', `input="${normalizedInput}" species=${species}`);
+    // 4) Result cache (after typo correction and exact match)
+    const cached = await getCachedResult(normalizedInput, species);
+    if (cached) {
+      if (__DEV__) console.log('SFL:stage=result_cache');
+      logDev('result_cache_hit', `input="${normalizedInput}" species=${species}`);
+      if (__DEV__) {
+        const totalMs = Date.now() - startTime;
+        console.log(`SFL:total_ms=${totalMs}`);
+      }
+      return capResult(cached);
     }
 
-    // 4) Decompose if cache miss
-    if (!decomposition) {
-      logDev('calling_llm_decomp', `input="${normalizedInput}" species=${species}`);
-      decomposition = await decomposeFood(input);
-      if (!decomposition) {
-        // existing UNKNOWN / VET FIRST behavior
-        logDev('decomp_returned_null', `input="${normalizedInput}" species=${species}`);
-        const fallback = capResult(foodLookup(input));
-        await setCachedResult(normalizedInput, species, fallback);
-        return fallback;
-      }
-      await setCachedDecomposition(normalizedInput, species, decomposition);
-    }
+    // 4) USDA lookup (cache + API)
+    if (__DEV__) console.log('SFL:stage=usda');
+    let usdaUsed = false;
+    let usdaHasIngredients = false;
+    let llmUsed = false;
 
-    // 5) Map ingredients to dataset entries (ignore unknowns)
-    // Track aliased ingredients for hazard detection
-    const ingredientAliases = new Map<FoodEntry, string>();
-    const allHazardIds = new Set<string>();
-    
-    // First pass: check all decomposed ingredients for hazard aliases
-    for (const ing of decomposition.likelyIngredients ?? []) {
-      const hazardId = normalizeToHazardId(ing);
-      if (hazardId) {
-        allHazardIds.add(hazardId);
-      }
-    }
-    
-    const mapped = (decomposition.likelyIngredients ?? [])
-      .map((ing) => {
-        // First try direct lookup
-        const entry = lookupDatasetEntry(ing);
-        if (entry) return { entry, aliased: null as string | null };
+    try {
+      // Check USDA cache first
+      const usdaCached = await getUsdaCached(normalizedInput);
+      
+      let usdaIngredientsText: string | null = null;
+      let usdaCandidate: { fdcId: number; description: string; dataType: string; brandName?: string } | null = null;
+
+      if (usdaCached) {
+        // Soft miss: if cached but ingredients are missing or empty, retry
+        const hasIngredients = usdaCached.ingredientsText && usdaCached.ingredientsText.trim().length > 0;
         
-        // Check if ingredient matches a hazard alias
-        const hazardId = normalizeToHazardId(ing);
-        if (hazardId) {
-          // Look up the hazard by its ID
-          const hazardEntry = lookupDatasetEntry(hazardId);
-          if (hazardEntry) {
-            return { entry: hazardEntry, aliased: hazardId };
+        if (!hasIngredients) {
+          if (__DEV__) console.log('USDA_CACHE:soft_miss reason=no_ingredients');
+          // Treat as miss and retry search
+          // Use raw input if 2+ words for better branded food matching
+          const searchQuery = input.trim().split(/\s+/).length >= 2 ? input : normalizedInput;
+          const searchResults = await usdaSearch(searchQuery);
+          usdaCandidate = pickBestUsdaCandidate(searchResults);
+          
+          if (usdaCandidate) {
+            usdaUsed = true;
+            // Fetch details
+            const details = await usdaFoodDetails(usdaCandidate.fdcId);
+            usdaIngredientsText = extractIngredientsText(details);
+            
+            // If ingredients extracted, overwrite cache entry
+            if (usdaIngredientsText) {
+              await setUsdaCached(normalizedInput, {
+                query: normalizedInput,
+                fdcId: usdaCandidate.fdcId,
+                description: usdaCandidate.description,
+                dataType: usdaCandidate.dataType,
+                brandName: usdaCandidate.brandName,
+                ingredientsText: usdaIngredientsText,
+              });
+            } else {
+              // Still no ingredients - keep existing cache entry (don't overwrite)
+              usdaCandidate = {
+                fdcId: usdaCached.fdcId,
+                description: usdaCached.description,
+                dataType: usdaCached.dataType,
+                brandName: usdaCached.brandName,
+              };
+            }
+          } else {
+            // No candidate found - use cached entry
+            usdaUsed = true;
+            usdaIngredientsText = null;
+            usdaCandidate = {
+              fdcId: usdaCached.fdcId,
+              description: usdaCached.description,
+              dataType: usdaCached.dataType,
+              brandName: usdaCached.brandName,
+            };
+          }
+        } else {
+          // Cache hit with ingredients - use it
+          usdaUsed = true;
+          usdaIngredientsText = usdaCached.ingredientsText ?? null;
+          usdaCandidate = {
+            fdcId: usdaCached.fdcId,
+            description: usdaCached.description,
+            dataType: usdaCached.dataType,
+            brandName: usdaCached.brandName,
+          };
+        }
+      } else {
+        // No cache - run USDA search
+        // Use raw input if 2+ words for better branded food matching
+        const searchQuery = input.trim().split(/\s+/).length >= 2 ? input : normalizedInput;
+        const searchResults = await usdaSearch(searchQuery);
+        usdaCandidate = pickBestUsdaCandidate(searchResults);
+        
+        if (usdaCandidate) {
+          usdaUsed = true;
+          // Fetch details
+          const details = await usdaFoodDetails(usdaCandidate.fdcId);
+          usdaIngredientsText = extractIngredientsText(details);
+          
+          // Cache USDA result
+          await setUsdaCached(normalizedInput, {
+            query: normalizedInput,
+            fdcId: usdaCandidate.fdcId,
+            description: usdaCandidate.description,
+            dataType: usdaCandidate.dataType,
+            brandName: usdaCandidate.brandName,
+            ingredientsText: usdaIngredientsText ?? undefined,
+          });
+        }
+      }
+
+      // If USDA provided ingredients, process them
+      if (usdaIngredientsText) {
+        usdaHasIngredients = true;
+        const ingredientTokens = parseIngredientsText(usdaIngredientsText);
+        
+        if (__DEV__) {
+          const preview = ingredientTokens.slice(0, 10).join(',');
+          console.log(`SFL:usda_tokens count=${ingredientTokens.length} preview="${preview}"`);
+        }
+        
+        // Track aliased ingredients for hazard detection
+        const ingredientAliases = new Map<FoodEntry, string>();
+        const allHazardIds = new Set<string>();
+        
+        // Check all tokens for hazard aliases
+        for (const token of ingredientTokens) {
+          const hazardId = normalizeToHazardId(token);
+          if (hazardId) {
+            allHazardIds.add(hazardId);
           }
         }
         
-        return null;
-      })
-      .filter((x): x is { entry: FoodEntry; aliased: string | null } => !!x)
-      .map(({ entry, aliased }) => {
-        if (aliased) {
-          ingredientAliases.set(entry, aliased);
+        // Map tokens to dataset entries
+        const mapped = ingredientTokens
+          .map((token) => {
+            // First try direct lookup
+            const entry = lookupDatasetEntry(token);
+            if (entry) return { entry, aliased: null as string | null };
+            
+            // Check if token matches a hazard alias
+            const hazardId = normalizeToHazardId(token);
+            if (hazardId) {
+              const hazardEntry = lookupDatasetEntry(hazardId);
+              if (hazardEntry) {
+                return { entry: hazardEntry, aliased: hazardId };
+              }
+            }
+            
+            return null;
+          })
+          .filter((x): x is { entry: FoodEntry; aliased: string | null } => !!x)
+          .map(({ entry, aliased }) => {
+            if (aliased) {
+              ingredientAliases.set(entry, aliased);
+            }
+            return entry;
+          });
+
+        // Check if any token matches an always-toxic hazard
+        const hasAlwaysToxicHazard = Array.from(allHazardIds).some((hazardId) =>
+          alwaysToxicSet.has(hazardId),
+        );
+
+        // If ingredient coverage is weak, fall back to LLM
+        if (mapped.length < 1) {
+          if (__DEV__) {
+            console.log('SFL:usda_has_ingredients=false reason=no_mapped_ingredients');
+            usdaHasIngredients = false;
+          }
+        } else {
+          // Use USDA ingredients - build result
+          if (hasAlwaysToxicHazard) {
+            const result: FoodLookupResult = capResult({
+              verdict: 'TOXIC',
+              canonicalName: normalizedInput,
+              explanation: buildExplanationFromIngredients(mapped, {
+                version: '1',
+                normalizedName: normalizedInput,
+                likelyIngredients: ingredientTokens,
+              } as DecompositionResponse, false),
+              action: baseActionForVerdict('TOXIC'),
+              color: getVerdictColor('TOXIC'),
+            });
+            await setCachedResult(normalizedInput, species, result);
+            if (__DEV__) {
+              const totalMs = Date.now() - startTime;
+              console.log(`SFL:usda_used=${usdaUsed}`);
+              console.log(`SFL:usda_has_ingredients=${usdaHasIngredients}`);
+              console.log(`SFL:llm_used=false`);
+              console.log(`SFL:total_ms=${totalMs}`);
+            }
+            return result;
+          }
+
+          const { verdict, downgraded } = aggregateVerdict(normalizedInput, mapped, ingredientAliases);
+          const result: FoodLookupResult = capResult({
+            verdict,
+            canonicalName: normalizedInput,
+            explanation: buildExplanationFromIngredients(mapped, {
+              version: '1',
+              normalizedName: normalizedInput,
+              likelyIngredients: ingredientTokens,
+            } as DecompositionResponse, downgraded),
+            action: baseActionForVerdict(verdict),
+            color: getVerdictColor(verdict),
+          });
+          await setCachedResult(normalizedInput, species, result);
+          if (__DEV__) {
+            const totalMs = Date.now() - startTime;
+            console.log(`SFL:usda_used=${usdaUsed}`);
+            console.log(`SFL:usda_has_ingredients=${usdaHasIngredients}`);
+            console.log(`SFL:llm_used=false`);
+            console.log(`SFL:total_ms=${totalMs}`);
+          }
+          return result;
         }
-        return entry;
-      });
-    
-    // Check if any decomposed ingredient matches an always-toxic hazard
-    const hasAlwaysToxicHazard = Array.from(allHazardIds).some((hazardId) =>
-      alwaysToxicSet.has(hazardId),
-    );
-
-    // If ingredient coverage is weak, fall back to UNKNOWN / VET FIRST
-    if (mapped.length < 1) {
-      logDev('mapped_count_verdict', `mapped=0 verdict=VET_FIRST input="${normalizedInput}" species=${species}`);
-      const fallback = capResult(foodLookup(input));
-      await setCachedResult(normalizedInput, species, fallback);
-      return fallback;
+      }
+    } catch (err) {
+      // USDA lookup failed - proceed to LLM
+      if (__DEV__) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        console.log(`SFL:usda_used=false reason=error error="${errorMsg}"`);
+      }
     }
 
-    // __DEV__ logs for chocolate cake
-    if (__DEV__ && normalizedInput.includes('chocolate') && normalizedInput.includes('cake')) {
-      const toxicDrivers = mapped.filter((e) => e.verdict === 'TOXIC');
-      logDev(
-        'hazard_detection',
-        `input="${normalizedInput}" decomposed_ingredients=[${(decomposition.likelyIngredients ?? []).join(', ')}] mapped_ids=[${mapped.map((e) => e.id).join(', ')}] toxic_drivers=[${toxicDrivers.map((e) => e.id).join(', ')}] detected_hazards=[${Array.from(allHazardIds).join(', ')}]`,
+    // 5) LLM decomposition path (only if USDA didn't provide ingredients)
+    if (!usdaHasIngredients) {
+      llmUsed = true;
+
+      // Decomposition cache check (just before calling LLM)
+      let decomposition = await getCachedDecomposition(normalizedInput, species);
+      if (decomposition) {
+        if (__DEV__) console.log('SFL:stage=decomp_cache');
+        logDev('decomp_cache_hit', `input="${normalizedInput}" species=${species}`);
+      }
+
+      // 6) Decompose via LLM if cache miss
+      if (!decomposition) {
+        if (__DEV__) console.log('SFL:stage=llm');
+        logDev('calling_llm_decomp', `input="${normalizedInput}" species=${species}`);
+        decomposition = await decomposeFood(input);
+        if (!decomposition) {
+          // existing UNKNOWN / VET FIRST behavior
+          logDev('decomp_returned_null', `input="${normalizedInput}" species=${species}`);
+          const fallback = capResult(foodLookup(input));
+          await setCachedResult(normalizedInput, species, fallback);
+          if (__DEV__) {
+            const totalMs = Date.now() - startTime;
+            console.log(`SFL:usda_used=${usdaUsed}`);
+            console.log(`SFL:usda_has_ingredients=${usdaHasIngredients}`);
+            console.log(`SFL:llm_used=${llmUsed}`);
+            console.log(`SFL:total_ms=${totalMs}`);
+          }
+          return fallback;
+        }
+        await setCachedDecomposition(normalizedInput, species, decomposition);
+      }
+
+      // 5) Map ingredients to dataset entries (ignore unknowns)
+      // Track aliased ingredients for hazard detection
+      const ingredientAliases = new Map<FoodEntry, string>();
+      const allHazardIds = new Set<string>();
+      
+      // First pass: check all decomposed ingredients for hazard aliases
+      for (const ing of decomposition.likelyIngredients ?? []) {
+        const hazardId = normalizeToHazardId(ing);
+        if (hazardId) {
+          allHazardIds.add(hazardId);
+        }
+      }
+      
+      const mapped = (decomposition.likelyIngredients ?? [])
+        .map((ing) => {
+          // First try direct lookup
+          const entry = lookupDatasetEntry(ing);
+          if (entry) return { entry, aliased: null as string | null };
+          
+          // Check if ingredient matches a hazard alias
+          const hazardId = normalizeToHazardId(ing);
+          if (hazardId) {
+            // Look up the hazard by its ID
+            const hazardEntry = lookupDatasetEntry(hazardId);
+            if (hazardEntry) {
+              return { entry: hazardEntry, aliased: hazardId };
+            }
+          }
+          
+          return null;
+        })
+        .filter((x): x is { entry: FoodEntry; aliased: string | null } => !!x)
+        .map(({ entry, aliased }) => {
+          if (aliased) {
+            ingredientAliases.set(entry, aliased);
+          }
+          return entry;
+        });
+      
+      // Check if any decomposed ingredient matches an always-toxic hazard
+      const hasAlwaysToxicHazard = Array.from(allHazardIds).some((hazardId) =>
+        alwaysToxicSet.has(hazardId),
       );
-    }
 
-    // 6) Aggregate verdicts conservatively
-    // If any always-toxic hazard detected in decomposed ingredients, force TOXIC
-    if (hasAlwaysToxicHazard) {
+      // If ingredient coverage is weak, fall back to UNKNOWN / VET FIRST
+      if (mapped.length < 1) {
+        logDev('mapped_count_verdict', `mapped=0 verdict=VET_FIRST input="${normalizedInput}" species=${species}`);
+        const fallback = capResult(foodLookup(input));
+        await setCachedResult(normalizedInput, species, fallback);
+        if (__DEV__) {
+          const totalMs = Date.now() - startTime;
+          console.log(`SFL:usda_used=${usdaUsed}`);
+          console.log(`SFL:usda_has_ingredients=${usdaHasIngredients}`);
+          console.log(`SFL:llm_used=${llmUsed}`);
+          console.log(`SFL:total_ms=${totalMs}`);
+        }
+        return fallback;
+      }
+
+      // __DEV__ logs for chocolate cake
+      if (__DEV__ && normalizedInput.includes('chocolate') && normalizedInput.includes('cake')) {
+        const toxicDrivers = mapped.filter((e) => e.verdict === 'TOXIC');
+        logDev(
+          'hazard_detection',
+          `input="${normalizedInput}" decomposed_ingredients=[${(decomposition.likelyIngredients ?? []).join(', ')}] mapped_ids=[${mapped.map((e) => e.id).join(', ')}] toxic_drivers=[${toxicDrivers.map((e) => e.id).join(', ')}] detected_hazards=[${Array.from(allHazardIds).join(', ')}]`,
+        );
+      }
+
+      // 6) Aggregate verdicts conservatively
+      // If any always-toxic hazard detected in decomposed ingredients, force TOXIC
+      if (hasAlwaysToxicHazard) {
+        logDev(
+          'mapped_count_verdict',
+          `mapped=${mapped.length} verdict=TOXIC always_toxic_hazard=true input="${normalizedInput}" species=${species}`,
+        );
+        const result: FoodLookupResult = capResult({
+          verdict: 'TOXIC',
+          canonicalName: normalizedInput,
+          explanation: buildExplanationFromIngredients(mapped, decomposition, false),
+          action: baseActionForVerdict('TOXIC'),
+          color: getVerdictColor('TOXIC'),
+        });
+        await setCachedResult(normalizedInput, species, result);
+        if (__DEV__) {
+          const totalMs = Date.now() - startTime;
+          console.log(`SFL:usda_used=${usdaUsed}`);
+          console.log(`SFL:usda_has_ingredients=${usdaHasIngredients}`);
+          console.log(`SFL:llm_used=${llmUsed}`);
+          console.log(`SFL:total_ms=${totalMs}`);
+        }
+        return result;
+      }
+      
+      const { verdict, downgraded } = aggregateVerdict(normalizedInput, mapped, ingredientAliases);
       logDev(
         'mapped_count_verdict',
-        `mapped=${mapped.length} verdict=TOXIC always_toxic_hazard=true input="${normalizedInput}" species=${species}`,
+        `mapped=${mapped.length} verdict=${verdict.replace(' ', '_')}${downgraded ? ' downgraded=true' : ''} input="${normalizedInput}" species=${species}`,
       );
+
+      // 7) Build result
       const result: FoodLookupResult = capResult({
-        verdict: 'TOXIC',
+        verdict,
         canonicalName: normalizedInput,
-        explanation: buildExplanationFromIngredients(mapped, decomposition, false),
-        action: baseActionForVerdict('TOXIC'),
-        color: getVerdictColor('TOXIC'),
+        explanation: buildExplanationFromIngredients(mapped, decomposition, downgraded),
+        action: baseActionForVerdict(verdict),
+        color: getVerdictColor(verdict),
       });
       await setCachedResult(normalizedInput, species, result);
+      if (__DEV__) {
+        const totalMs = Date.now() - startTime;
+        console.log(`SFL:usda_used=${usdaUsed}`);
+        console.log(`SFL:usda_has_ingredients=${usdaHasIngredients}`);
+        console.log(`SFL:llm_used=${llmUsed}`);
+        console.log(`SFL:total_ms=${totalMs}`);
+      }
       return result;
     }
-    
-    const { verdict, downgraded } = aggregateVerdict(normalizedInput, mapped, ingredientAliases);
-    logDev(
-      'mapped_count_verdict',
-      `mapped=${mapped.length} verdict=${verdict.replace(' ', '_')}${downgraded ? ' downgraded=true' : ''} input="${normalizedInput}" species=${species}`,
-    );
-
-    // 7) Build result
-    const result: FoodLookupResult = capResult({
-      verdict,
-      canonicalName: normalizedInput,
-      explanation: buildExplanationFromIngredients(mapped, decomposition, downgraded),
-      action: baseActionForVerdict(verdict),
-      color: getVerdictColor(verdict),
-    });
-    await setCachedResult(normalizedInput, species, result);
-    return result;
   } catch {
     // Never throw
     logDev('fallback_vet_first_error', `input="${normalizedInput}" species=${species}`);
@@ -467,6 +851,13 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
       await setCachedResult(normalizedInput, species, fallback);
     } catch {
       // ignore
+    }
+    if (__DEV__) {
+      const totalMs = Date.now() - startTime;
+      console.log(`SFL:usda_used=false`);
+      console.log(`SFL:usda_has_ingredients=false`);
+      console.log(`SFL:llm_used=false`);
+      console.log(`SFL:total_ms=${totalMs}`);
     }
     return fallback;
   }

@@ -18,6 +18,11 @@ function RootLayoutNav() {
   useEffect(() => {
     async function checkOnboarding() {
       try {
+        // Smoke test: check USDA API key exists (dev only)
+        if (__DEV__) {
+          const hasUsdaKey = !!process.env.EXPO_PUBLIC_USDA_API_KEY;
+          console.log(`USDA_KEY_EXISTS:${hasUsdaKey}`);
+        }
 
         await AsyncStorage.removeItem(ONBOARDING_KEY);
         const value = await AsyncStorage.getItem(ONBOARDING_KEY);
