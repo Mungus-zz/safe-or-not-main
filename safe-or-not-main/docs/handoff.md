@@ -34,3 +34,5 @@ docs/DECISIONS.md (if present)
 any phase specific .md files
 
 These are your human memory layer.
+
+ChatGPT acts as the guide, Cursor implements the working code

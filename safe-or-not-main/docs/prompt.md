@@ -1,77 +1,47 @@
-Task 3: Unify explanation + action copy for clarity (provenance-honest)
+Task 4: Add local history (last 10 checks) with rerun
 
-Goal:
-Make every verdict explanation and action feel inevitable, calm, and consistent.
-This is copy unification and light structuring only.
+Context
+This task is part of the Trust & Confidence Surfacing phase. Intelligence is complete. This task surfaces past certainty without adding new capability.
 
-Hard constraints:
-- Do NOT change verdict logic.
-- Do NOT change lookup pipeline order.
-- Do NOT add new data sources.
-- Do NOT add new screens.
-- Do NOT add icons, meters, percentages, or education content.
-- Keep UI changes minimal; prefer using existing fields (explanation, action).
+ChatGPT is used for guidance and review only.
+Cursor is responsible for implementation.
 
-Files to inspect / adjust:
-- src/lib/foodLookup.ts
-- src/lib/smartFoodLookup.ts (primary location where explanation/action are currently composed for USDA and LLM paths)
-- any helper that formats explanation/action text (may be introduced if helpful)
-- app/verdict.tsx (only if rendering requires slight formatting, no redesign)
-- docs/STATE.md
-- docs/devlog.md
+Goal
+Add a small, local-only history of the last 10 food checks that users can tap to rerun.
 
-Requirements:
+Hard constraints
+- Do NOT change verdict logic
+- Do NOT change lookup pipeline order
+- Do NOT add new data sources
+- Do NOT add accounts, analytics, or cloud sync
+- Do NOT add education or explanations
+- Local-only storage
 
-1) Standardize explanation tone:
-- 1–2 short sentences max
-- Ingredient-grounded when ingredients are known
-- Never imply certainty beyond provenance
-- Avoid hedging when deterministic (dataset_exact, usda_ingredients)
-- For decomp_cache / llm_decomposition: explicitly acknowledge variability once
+Implementation requirements
 
-2) Standardize action tone:
-- Must match verdict severity
-- Must be short and directive
-- No panic language
-- No medical claims
-- If VET FIRST: encourage vet confirmation before feeding
-- If TOXIC: advise contacting a vet or pet poison helpline immediately
-- If SAFE: simple reassurance and portion moderation reminder (optional)
+1) Storage
+- Use AsyncStorage
+- Store last 10 successful checks only
+- Drop oldest entry when exceeding 10
+- Store normalized input, canonical name, verdict, provenance, timestamp
 
-3) Explanation/action templates by provenance:
+2) Rerun behavior
+- Tapping a history item reruns smartFoodLookup with the stored input
+- Navigation and result handling identical to a fresh check
+- Result cache may still apply normally
 
-- dataset_exact:
-  explanation: confirmed known safe/toxic item
-  action: verdict-aligned
+3) UI
+- Minimal history list near input
+- Show food name and verdict indicator
+- Include a clear history action
+- No redesign, no new screens
 
-- usda_ingredients:
-  explanation: derived from listed ingredients; mention key hazard if present
-  action: verdict-aligned
+Docs updates (required)
+- Update docs/STATE.md to mark Task 4 as in progress or implemented
+- Add a dated Task 4 entry to docs/devlog.md
+- Update docs/handoff.md with current phase, branch, and task status
 
-- result_cache:
-  explanation: same result as last check; do NOT add new claims
-  action: verdict-aligned
-
-- decomp_cache / llm_decomposition:
-  explanation: dish ingredients can vary; mention any detected hazards if present
-  action: generally “check ingredients / ask vet first” unless always-toxic hazard triggers TOXIC
-
-- fallback_unknown:
-  explanation: not enough info to verify
-  action: vet-first guidance
-
-4) Ensure always-toxic hazards are called out explicitly in explanation when matchedHazards includes them.
-
-Docs updates (required):
-
-A) docs/STATE.md
-- Under “What Is Implemented”, add: “Explanations and actions unified and provenance-honest”
-- Set “Next Task” to: “Add local history (last 10 checks) with rerun”
-
-B) docs/devlog.md
-- Add a dated entry: “Task 3 — Unified explanation and action copy for clarity (provenance-honest)”
-
-Output:
+Output
 - List files changed
-- Show the final explanation/action template mapping you implemented
 - Confirm verdict logic unchanged
+- Confirm history is local only
