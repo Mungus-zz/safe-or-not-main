@@ -93,3 +93,19 @@ Make existing correct answers feel inevitable, calm, and trustworthy without add
 
 ## Next Task (authoritative)
 Unify explanation + action copy for clarity.
+
+HAND OFF PROMPT
+
+## Handoff Snapshot
+
+Current Phase:
+Trust & Confidence Surfacing
+
+Last Completed Task:
+Task 1 – Provenance + confidence metadata
+
+Current Working Branch:
+phase/trust-confidence
+
+Next Task:
+Surface confidence language and unify explanation copy
