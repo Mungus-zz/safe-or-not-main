@@ -1,34 +1,70 @@
-We are resuming development of the Safe or Not app.
+Task 3: Unify explanation + action copy for clarity (provenance-honest)
 
-Treat this message and the uploaded files as the complete source of truth.
-Do not rely on prior chat context or memory.
+Goal:
+Make every verdict explanation and action feel inevitable, calm, and consistent.
+This is copy unification and light structuring only.
 
-Source of truth (authoritative):
-- Phase branch ZIP: phase/trust-confidence
-- Unmerged feature branches: (explicitly list, or say “none”)
-- Docs: STATE.md, devlog.md, DECISIONS.md
+Hard constraints:
+- Do NOT change verdict logic.
+- Do NOT change lookup pipeline order.
+- Do NOT add new data sources.
+- Do NOT add new screens.
+- Do NOT add icons, meters, percentages, or education content.
+- Keep UI changes minimal; prefer using existing fields (explanation, action).
 
-Current phase:
-Trust & Confidence Surfacing
+Files to inspect / adjust:
+- src/lib/foodLookup.ts
+- src/lib/smartFoodLookup.ts (only if explanation/action are assembled here)
+- any helper that formats explanation/action text
+- app/verdict.tsx (only if rendering requires slight formatting, no redesign)
+- docs/STATE.md
+- docs/devlog.md
 
-Completed work:
-- Task 1: Provenance + confidence metadata (completed and merged)
-- Task 2: Confidence label surfaced on verdict screen (completed)
+Requirements:
+1) Standardize explanation tone:
+- 1–2 short sentences max
+- Ingredient-grounded when ingredients are known
+- Never imply certainty beyond provenance
+- Avoid hedging when deterministic (dataset_exact, usda_ingredients)
+- For decomp_cache / llm_decomposition: explicitly acknowledge variability once
 
-Current working branch:
-phase/trust-confidence
+2) Standardize action tone:
+- Must match verdict severity
+- Must be short and directive
+- No panic language
+- No medical claims
+- If VET FIRST: encourage vet confirmation before feeding
+- If TOXIC: advise contacting a vet/poison helpline immediately
+- If SAFE: simple reassurance and portion moderation reminder (optional)
 
-Next task:
-(Unify explanation + action copy for clarity OR explicitly state the task you want to work on)
+3) Explanation/action templates by provenance:
+- dataset_exact:
+  explanation: confirmed known safe/toxic item
+  action: verdict-aligned
+- usda_ingredients:
+  explanation: derived from listed ingredients; mention key hazard if present
+  action: verdict-aligned
+- result_cache:
+  explanation: same result as last check; do NOT add new claims
+  action: verdict-aligned
+- decomp_cache / llm_decomposition:
+  explanation: dish ingredients can vary; mention any detected hazards if present
+  action: generally “check ingredients / ask vet first” unless always-toxic hazard triggers TOXIC
+- fallback_unknown:
+  explanation: not enough info to verify
+  action: vet-first guidance
 
-Constraints:
-- The app is a tool, not a platform
-- Core loop is: type food → get verdict → exit
-- Deterministic data precedes AI at all times
-- No new features unless explicitly requested
-- No branch assumptions beyond what is uploaded
-- No scope expansion
+4) Ensure always-toxic hazards are called out explicitly in explanation when matchedHazards includes them.
 
-Instruction:
-Use the uploaded repo and docs as authoritative.
-If anything is unclear or contradictory, ask before proceeding.
+Docs updates (required):
+A) docs/STATE.md
+- Under “What Is Implemented”, add: “Explanations and actions unified and provenance-honest”
+- Set “Next Task” to: “Add local history (last 10 checks) with rerun”
+
+B) docs/devlog.md
+- Add a dated entry: “Task 3 — Unified explanation and action copy for clarity (provenance-honest)”
+
+Output:
+- List files changed
+- Show the final explanation/action template mapping you implemented
+- Confirm verdict logic unchanged
