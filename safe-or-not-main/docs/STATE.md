@@ -59,6 +59,7 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 - Deterministic verdict resolution
 - Network guards and fail-closed behavior
 - Lookup results include provenance + confidence metadata
+- Verdict screen surfaces confidence label derived from lookup provenance
 
 ## Branch Reality
 - main: earlier deterministic baseline
@@ -91,4 +92,4 @@ Make existing correct answers feel inevitable, calm, and trustworthy without add
 - Educational content
 
 ## Next Task (authoritative)
-Surface confidence label and honest trust line on verdict screen.
+Unify explanation + action copy for clarity.

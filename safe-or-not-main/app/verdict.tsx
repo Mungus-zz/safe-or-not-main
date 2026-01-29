@@ -69,7 +69,7 @@ export default function VerdictScreen() {
     }
     return [];
   })();
-  // provenance, confidenceLabel, matchedIngredients, matchedHazards available for future UI
+  // provenance, matchedIngredients, matchedHazards available for future UI
 
   const handleBack = () => {
     if (isLeavingRef.current) return;
@@ -102,6 +102,7 @@ export default function VerdictScreen() {
         <Text style={[styles.verdict, { color: verdictData.color }]}>
           {verdictData.verdict}
         </Text>
+        <Text style={styles.confidenceLabel}>{confidenceLabel}</Text>
 
         <Text style={styles.foodName}>{formattedFood}</Text>
 
@@ -111,7 +112,7 @@ export default function VerdictScreen() {
       </View>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 24 }]}>
-        <Text style={styles.footerText}>Based on veterinary sources</Text>
+        <Text style={styles.footerText}>{confidenceLabel}</Text>
       </View>
     </Animated.View>
   );
@@ -141,6 +142,13 @@ const styles = StyleSheet.create({
   verdict: {
     fontSize: 36,
     fontWeight: '700',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  confidenceLabel: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: Colors.textMuted,
     marginBottom: 16,
     textAlign: 'center',
   },
