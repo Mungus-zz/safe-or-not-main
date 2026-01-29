@@ -206,13 +206,13 @@ Chronological log of implementation from the beginning of the MVP codebase.
 
 ---
 
-## Task 1 — Provenance + confidence metadata (2025-01-23)
+## Task 1 — Provenance + confidence metadata (2026-01-29)
 
 Added provenance + confidence metadata to lookup results; passed through navigation; no verdict logic changes.
 
 ---
 
-## Task 2 — Confidence label and honest trust language (2025-01-23)
+## Task 2 — Confidence label and honest trust language (2026-01-29)
 
 Surfaced confidence label and honest trust language on verdict screen.
 

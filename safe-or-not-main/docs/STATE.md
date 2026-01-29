@@ -64,7 +64,7 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 ## Branch Reality
 - main: earlier deterministic baseline
 - feat-autocomplete: autocomplete + full intelligence pipeline (merged into phase branch)
-- phase3-intelligence: effectively equivalent to feat-autocomplete
+- phase3-intelligence: historical; effectively equivalent to feat-autocomplete (not active)
 - phase/trust-confidence: active phase branch (authoritative)
 
 ## Active Development Baseline
