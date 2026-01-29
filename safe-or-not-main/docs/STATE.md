@@ -63,11 +63,12 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 
 ## Branch Reality
 - main: earlier deterministic baseline
-- feat-autocomplete: autocomplete + full intelligence pipeline
+- feat-autocomplete: autocomplete + full intelligence pipeline (merged into phase branch)
 - phase3-intelligence: effectively equivalent to feat-autocomplete
+- phase/trust-confidence: active phase branch (authoritative)
 
 ## Active Development Baseline
-- feat-autocomplete (authoritative)
+- phase/trust-confidence (authoritative)
 
 ## Current Phase
 Trust & Confidence Surfacing
@@ -94,18 +95,9 @@ Make existing correct answers feel inevitable, calm, and trustworthy without add
 ## Next Task (authoritative)
 Unify explanation + action copy for clarity.
 
-HAND OFF PROMPT
-
 ## Handoff Snapshot
 
-Current Phase:
-Trust & Confidence Surfacing
-
-Last Completed Task:
-Task 1 – Provenance + confidence metadata
-
-Current Working Branch:
-phase/trust-confidence
-
-Next Task:
-Surface confidence language and unify explanation copy
+- **Current Phase:** Trust & Confidence Surfacing
+- **Last Completed Task:** Task 2 — Confidence label surfaced on verdict screen
+- **Current Working Branch:** phase/trust-confidence
+- **Next Task:** Unify explanation + action copy for clarity
