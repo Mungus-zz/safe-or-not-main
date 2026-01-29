@@ -14,13 +14,14 @@ Hard constraints:
 
 Files to inspect / adjust:
 - src/lib/foodLookup.ts
-- src/lib/smartFoodLookup.ts (only if explanation/action are assembled here)
-- any helper that formats explanation/action text
+- src/lib/smartFoodLookup.ts (primary location where explanation/action are currently composed for USDA and LLM paths)
+- any helper that formats explanation/action text (may be introduced if helpful)
 - app/verdict.tsx (only if rendering requires slight formatting, no redesign)
 - docs/STATE.md
 - docs/devlog.md
 
 Requirements:
+
 1) Standardize explanation tone:
 - 1–2 short sentences max
 - Ingredient-grounded when ingredients are known
@@ -34,22 +35,27 @@ Requirements:
 - No panic language
 - No medical claims
 - If VET FIRST: encourage vet confirmation before feeding
-- If TOXIC: advise contacting a vet/poison helpline immediately
+- If TOXIC: advise contacting a vet or pet poison helpline immediately
 - If SAFE: simple reassurance and portion moderation reminder (optional)
 
 3) Explanation/action templates by provenance:
+
 - dataset_exact:
   explanation: confirmed known safe/toxic item
   action: verdict-aligned
+
 - usda_ingredients:
   explanation: derived from listed ingredients; mention key hazard if present
   action: verdict-aligned
+
 - result_cache:
   explanation: same result as last check; do NOT add new claims
   action: verdict-aligned
+
 - decomp_cache / llm_decomposition:
   explanation: dish ingredients can vary; mention any detected hazards if present
   action: generally “check ingredients / ask vet first” unless always-toxic hazard triggers TOXIC
+
 - fallback_unknown:
   explanation: not enough info to verify
   action: vet-first guidance
@@ -57,6 +63,7 @@ Requirements:
 4) Ensure always-toxic hazards are called out explicitly in explanation when matchedHazards includes them.
 
 Docs updates (required):
+
 A) docs/STATE.md
 - Under “What Is Implemented”, add: “Explanations and actions unified and provenance-honest”
 - Set “Next Task” to: “Add local history (last 10 checks) with rerun”
