@@ -3,9 +3,6 @@ A fast, privacy-first food safety checker for dogs
 
 Quick. Private. Reliable. Know in seconds if a food is safe for your dog.
 
-https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white
-https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
-https://img.shields.io/badge/Privacy_First-4A90E2?style=for-the-badge&logo=lock&logoColor=white
 
 🚀 Quick Start
 bash
