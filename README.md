@@ -1,200 +1,205 @@
-🐾 Safe or Not
+Safe or Not
 
-Safe or Not is a calm, single-purpose mobile app that helps pet owners quickly determine whether a food is safe, toxic, or requires veterinary guidance for pets.
+A fast, privacy-first food safety checker for dogs.
 
-The app is intentionally minimal and conservative.
-It prioritizes clarity, trust, and emotional steadiness at moments when users may be uncertain or stressed.
+Safe or Not helps pet owners quickly determine whether a food is SAFE, TOXIC, or VET FIRST for dogs.
+The system prioritizes deterministic data, speed, and trust, with AI used only as a controlled fallback.
 
-📦 Current Version
+Core Principles
 
-v0.4.0
+Safety first
+Always-toxic hazards are enforced deterministically.
 
-Phase 2 complete: visual polish, motion, and microcopy refinement.
+Deterministic before AI
+Local data → USDA → cached results → LLM fallback.
 
-🎯 Core Purpose
+Fast by default
+Most lookups resolve in milliseconds without network calls.
 
-Help pet owners answer one question clearly and responsibly:
+Privacy-first
+No accounts, no tracking, no backend storage.
 
-Is this food safe for my pet?
+Explainable outcomes
+Every verdict is derived from identifiable ingredients or known hazards.
 
-What this app is not
+Verdicts
+Verdict	Meaning
+SAFE	Known to be safe for dogs
+TOXIC	Known to be dangerous or poisonous
+VET FIRST	Uncertain or mixed dish; consult a vet before feeding
+Lookup Pipeline (Order Matters)
 
-No dashboards
+The lookup flow is intentionally ordered for correctness and speed:
 
-No history or tracking
+Exact match (local dataset)
+Immediate result from foods.json.
 
-No streaks or scores
+Typo correction
+Common single-word typos corrected before any caching.
 
-No self-help tone
+Result cache
+Previously resolved inputs return instantly.
 
-No gamification
+USDA FoodData Central (fast path)
 
-Just a clear answer, delivered calmly.
+Searches up to 25 candidates
 
-🔁 How It Works
+Prioritizes Branded foods
 
-The user enters a food name
+Extracts explicit ingredient lists only
 
-The app returns one of three conservative verdicts:
+Cached with soft-miss retries
 
-🟢 SAFE
+LLM decomposition (fallback only)
 
-🔴 TOXIC
+Used only when USDA ingredients are unavailable
 
-⚠️ VET FIRST
+Strict JSON schema
 
-The user can immediately check another food
+Name guards prevent drift
 
-The flow is linear, fast, and interruption-free.
+Fails fast on rate limits and timeouts
 
-🧠 Data Model
+This guarantees predictable behavior and avoids hallucinated ingredients.
 
-Local JSON-based dataset
+Always-Toxic Hazards (Hard Rules)
 
-Conservative classifications only
+These always result in TOXIC, regardless of dish type:
 
-Unknown or ambiguous foods always default to VET FIRST
+Chocolate (incl. cocoa)
 
-Synonym support and normalized input matching
+Xylitol
 
-Tolerant of punctuation, casing, and spacing
+Grapes
 
-Species-specific coverage where applicable
+Raisins
 
-Source attribution included for each food
+Alcohol
 
-No backend. No network calls.
+Macadamia nuts
 
-🎨 Design Philosophy
-Visual Design
+Alias detection ensures variants (e.g. “cocoa”, “sugar-free gum”) are caught.
 
-Warm, modern pet brand aesthetic
+Mixed Dish Logic
 
-Off-white backgrounds (no stark white)
+Prepared foods (soups, stews, casseroles, etc.) follow special rules:
 
-Soft, elevated surfaces for input and actions
+If only additive toxins (onion, garlic, chives) are present
+→ Verdict is downgraded to VET FIRST
 
-Restrained, accessible verdict colors
+If any always-toxic hazard is present
+→ Verdict remains TOXIC
 
-Strong contrast and readable typography
+This prevents false panic while still protecting pets.
 
-No decorative or distracting UI
+Autocomplete (Local, Deterministic)
 
-The design favors calm authority over friendliness or playfulness.
+Autocomplete improves speed and confidence without affecting free text input.
 
-Motion & Interaction
+Data source: local foods.json only
 
-Subtle fade + vertical motion for screen transitions
+Prefix matching (canonical first, then synonyms)
 
-Motion reinforces continuity, never urgency
+Max 12 suggestions
 
-Verdicts are revealed with composed pacing
+Deduplicated by ID
 
-Back navigation feels lighter and dismissive
+Scrollable, keyboard-safe dropdown
 
-Centralized motion tokens for consistency
+Selecting a suggestion fills the input but never blocks manual entry
 
-No flashy animations.
-No bounce effects.
+Autocomplete does not restrict what users can submit.
 
-Microcopy
+USDA Integration
 
-Human, reassuring phrasing without changing meaning
+The app uses the USDA FoodData Central API as a deterministic middle layer.
 
-CTAs framed as guidance, not commands
+Search results expanded to 25 for better branded coverage
 
-Navigation language is contextual
+Prioritizes Branded → Foundation → SR → Survey
 
-No emotional manipulation
+Ingredient extraction only from explicit ingredient fields
 
-No self-help framing
+No inference from descriptions or nutrients
 
-Copy is intentionally neutral and trust-forward.
+30-day cache with soft-miss retry behavior
 
-🏗 Architecture
+Environment variable required:
 
-Built with Expo and expo-router
+EXPO_PUBLIC_USDA_API_KEY
 
-Clean separation of concerns
+LLM Fallback (Controlled)
 
-Centralized design tokens for:
+LLMs are used only when:
 
-Colors
+No exact match exists
 
-Typography
+USDA ingredients are unavailable
 
-Spacing
+No cached decomposition exists
 
-Radius
+Safeguards:
 
-Shadows
+Strict JSON schema
 
-Motion
+Name guard allows branded prefixes but prevents drift
 
-No backend dependencies
+Fail-fast on 429s and timeouts
 
-No analytics
+Safe-by-default (returns VET FIRST on failure)
 
-No tracking
+Tech Stack
 
-No notifications
+Expo + React Native
 
-The codebase is stable, readable, and future-extensible.
+TypeScript
 
-✅ What v0.4.0 Represents
+AsyncStorage for local caching
 
-MVP fully functional
+USDA FoodData Central API
 
-Visual identity locked
+OpenRouter (DeepSeek free model) for fallback decomposition
 
-Motion language established
+Development
+Install
+npm install
 
-Microcopy refined
+Environment
 
-Phase 2 complete
+Create a .env file:
 
-This version serves as a long-term foundation.
-Future work can focus on intelligence or expansion without reworking core UX or visuals.
+EXPO_PUBLIC_USDA_API_KEY=your_usda_key
+EXPO_PUBLIC_OPENROUTER_API_KEY=your_openrouter_key
 
-🔮 Future Directions (Not Implemented)
+Run
+npx expo start
 
-These are intentionally deferred:
+Project Structure (Relevant)
+src/
+  lib/
+    smartFoodLookup.ts     # Core intelligence pipeline
+    decomposeFood.ts       # LLM decomposition + guards
+    usdaClient.ts          # USDA API client
+    usdaCache.ts           # USDA caching
+    usdaIngredients.ts     # Ingredient extraction
+    autocompleteFoods.ts   # Local autocomplete logic
+data/
+  foods.json               # Canonical food dataset
+app/
+  input.tsx                # Input + autocomplete UI
 
-Expanded food dataset
+Roadmap (High-Level)
 
-Veterinary intelligence or LLM integration
+Local history + favorites
 
-Monetization experiments
+Confidence explanations per verdict
 
-Regional or species-specific guidance
+Optional premium speed tier
 
+Accessibility refinements
 
-Phase 3.1 – Ingredient decomposition MVP
+iOS App Store submission
 
-LLM decomposes foods → ingredients
+Disclaimer
 
-Uses your existing dataset for verdicts
-
-Conservative aggregation
-
-No UI changes
-
-Phase 3.2 – Confidence refinement
-
-Quantity awareness (small vs large amounts)
-
-Cooking method awareness
-
-Species nuance improved
-
-Phase 3.3 – Authority reinforcement
-
-VetClinPathGPT as internal reviewer
-
-Source reinforcement
-
-Edge case handling
-
-🔒 License
-
-Private project. All rights reserved.
+This app provides educational guidance only and does not replace professional veterinary advice. When in doubt, always consult a licensed veterinarian.
