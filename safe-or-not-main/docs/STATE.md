@@ -60,6 +60,7 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 - Network guards and fail-closed behavior
 - Lookup results include provenance + confidence metadata
 - Verdict screen surfaces confidence label derived from lookup provenance
+- Explanations and actions unified and provenance-honest; final copy polish applied to reduce repetition in verdict explanations
 
 ## Branch Reality
 - main: earlier deterministic baseline
@@ -93,11 +94,11 @@ Make existing correct answers feel inevitable, calm, and trustworthy without add
 - Educational content
 
 ## Next Task (authoritative)
-Unify explanation + action copy for clarity.
+Add local history (last 10 checks) with rerun.
 
 ## Handoff Snapshot
 
 - **Current Phase:** Trust & Confidence Surfacing
-- **Last Completed Task:** Task 2 — Confidence label surfaced on verdict screen
+- **Last Completed Task:** Task 3 — Unified explanation and action copy (provenance-honest)
 - **Current Working Branch:** phase/trust-confidence
-- **Next Task:** Unify explanation + action copy for clarity
+- **Next Task:** Add local history (last 10 checks) with rerun

@@ -218,6 +218,14 @@ Surfaced confidence label and honest trust language on verdict screen.
 
 ---
 
+## Task 3 — Unified explanation and action copy (provenance-honest) (2026-01-29)
+
+Unified explanation and action copy for clarity; all copy is provenance-honest and verdict-aligned. No verdict logic or pipeline order changed.
+
+Task 3 — Copy polish: reduced repetition in verdict explanations (2026-01-29).
+
+---
+
 ## Summary
 
 The MVP now has: local JSON lookup with priority and sugar-free/xylitol rule; Expo Router layout without backend; Figma-aligned visuals and motion; refined microcopy; OpenRouter/DeepSeek client with timeout and 429 fast-fail; decomposition module with validation and name guard; decomposition, USDA, and result caches; USDA client and ingredient extraction; smart lookup pipeline with USDA + LLM fallback and conservative verdict aggregation; loading guard on submit; and local-dataset autocomplete with prefix match and keyboard handling. All caches use 30-day TTL and versioned keys; dev logging is gated by `__DEV__`.

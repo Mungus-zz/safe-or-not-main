@@ -1,6 +1,5 @@
 import Colors from '@/constants/colors';
 import foodsData from '@/src/data/foods.json';
-import type { DecompositionResponse } from '@/src/lib/decomposeFood';
 import { decomposeFood, normalizeUserInputForCompare } from '@/src/lib/decomposeFood';
 import {
   getCachedDecomposition,
@@ -128,13 +127,108 @@ function getVerdictColor(verdict: VerdictType): string {
 function baseActionForVerdict(verdict: VerdictType): string {
   switch (verdict) {
     case 'TOXIC':
-      return 'Contact a vet immediately.';
+      return 'Do not feed. Contact a vet or pet poison helpline immediately.';
     case 'SAFE':
       return 'Generally safe in small amounts.';
     case 'VET FIRST':
     default:
-      return 'When unsure, contact your vet first.';
+      return 'Check with your vet before feeding.';
   }
+}
+
+function actionForDecomp(verdict: VerdictType): string {
+  if (verdict === 'TOXIC') return baseActionForVerdict('TOXIC');
+  return 'Check ingredients or ask your vet before feeding.';
+}
+
+/** Format always-toxic hazard IDs for display in explanations (e.g. chocolate → Chocolate). */
+function formatAlwaysToxicHazardsForDisplay(hazardIds: string[]): string {
+  const displayNames: Record<string, string> = {
+    chocolate: 'Chocolate',
+    xylitol: 'Xylitol',
+    grapes: 'Grapes',
+    raisins: 'Raisins',
+    alcohol: 'Alcohol',
+    macadamia: 'Macadamia nuts',
+  };
+  const filtered = hazardIds.filter((id) => alwaysToxicSet.has(id));
+  const names = [...new Set(filtered)].map((id) => displayNames[id] ?? id);
+  if (names.length === 0) return '';
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
+}
+
+const RESULT_CACHE_EXPLANATION = 'Same result as your last check.';
+
+/** Unified explanation for dataset_exact (built-in list). */
+function explanationForDatasetExact(verdict: VerdictType, matchedHazards: string[]): string {
+  const hazardPhrase = formatAlwaysToxicHazardsForDisplay(matchedHazards);
+  switch (verdict) {
+    case 'SAFE':
+      return 'This item is on our built in list as safe for dogs.';
+    case 'VET FIRST':
+      return 'This item is on our built in list as vet first because safety depends on preparation or portion.';
+    case 'TOXIC':
+      if (hazardPhrase) {
+        const plural = matchedHazards.filter((id) => alwaysToxicSet.has(id)).length > 1;
+        const second =
+          plural ? `${hazardPhrase} are known dog toxins.` : `${hazardPhrase} is a known dog toxin.`;
+        return `This item is on our built in list as toxic to dogs. ${second}`;
+      }
+      return 'This item is on our built in list as toxic to dogs.';
+    default:
+      return 'This item is on our built in list as vet first because safety depends on preparation or portion.';
+  }
+}
+
+/** Unified action for dataset_exact (verdict-aligned). */
+function actionForDatasetExact(verdict: VerdictType): string {
+  return baseActionForVerdict(verdict);
+}
+
+function explanationForUsda(
+  verdict: VerdictType,
+  matchedHazards: string[],
+  downgraded: boolean,
+): string {
+  const hazardPhrase = formatAlwaysToxicHazardsForDisplay(matchedHazards);
+  if (downgraded) {
+    return "Based on the product's listed ingredients. Prepared foods often include onion or garlic; check with your vet.";
+  }
+  if (hazardPhrase) {
+    const plural = matchedHazards.filter((id) => alwaysToxicSet.has(id)).length > 1;
+    const callout =
+      plural ? `${hazardPhrase} are known dog toxins.` : `${hazardPhrase} is a known dog toxin.`;
+    return `Based on the product's listed ingredients. ${callout}`;
+  }
+  if (verdict === 'SAFE') {
+    return "Based on the product's listed ingredients, nothing concerning was found.";
+  }
+  if (verdict === 'VET FIRST') {
+    return "Based on the product's listed ingredients. Some ingredients may need vet confirmation.";
+  }
+  return "Based on the product's listed ingredients.";
+}
+
+function explanationForDecomp(
+  verdict: VerdictType,
+  matchedHazards: string[],
+  downgraded: boolean,
+): string {
+  const hazardPhrase = formatAlwaysToxicHazardsForDisplay(matchedHazards);
+  if (downgraded) {
+    return 'Dish ingredients can vary. Onion or garlic are often present; check with your vet.';
+  }
+  if (hazardPhrase) {
+    const plural = matchedHazards.filter((id) => alwaysToxicSet.has(id)).length > 1;
+    const callout =
+      plural
+        ? `${hazardPhrase} were detected and are known dog toxins.`
+        : `${hazardPhrase} was detected and is a known dog toxin.`;
+    return `Dish ingredients can vary. ${callout}`;
+  }
+  return 'Dish ingredients can vary. Check ingredients or ask your vet before feeding.';
 }
 
 function datasetMatchExists(rawInput: string): boolean {
@@ -403,47 +497,6 @@ function aggregateVerdict(
   return { verdict: 'TOXIC', downgraded: false };
 }
 
-function buildExplanationFromIngredients(
-  mapped: FoodEntry[],
-  decomposition: DecompositionResponse,
-  downgraded: boolean,
-): string {
-  // Keep this short; Verdict screen is non-scroll.
-  const uniqueCanonical = Array.from(
-    new Map(mapped.map((m) => [m.canonicalName, m])).values(),
-  );
-
-  if (downgraded) {
-    // Special case: mixed dish with only additive toxic ingredients
-    return 'This food is generally safe, but prepared dishes often include onion or garlic. Avoid feeding unless ingredients are confirmed.';
-  }
-
-  const toxic = uniqueCanonical.filter((e) => e.verdict === 'TOXIC').map((e) => e.canonicalName);
-  const vetFirst = uniqueCanonical
-    .filter((e) => e.verdict === 'VET FIRST')
-    .map((e) => e.canonicalName);
-  const safe = uniqueCanonical.filter((e) => e.verdict === 'SAFE').map((e) => e.canonicalName);
-
-  let msg = 'Based on common ingredients, ';
-  if (toxic.length > 0) {
-    msg += `this may contain toxic items like ${toxic.slice(0, 2).join(', ')}.`;
-  } else if (vetFirst.length > 0) {
-    msg += `some ingredients may be risky (e.g., ${vetFirst.slice(0, 2).join(', ')}).`;
-  } else if (safe.length > 0) {
-    msg += `the recognized ingredients appear safe.`;
-  } else {
-    msg = 'Safety can vary by preparation or portion size.';
-  }
-
-  // Add a gentle uncertainty note if the model signaled variability.
-  if (decomposition.notes && msg.length < 150) {
-    const extra = ` ${decomposition.notes}`;
-    msg = (msg + extra).slice(0, 180);
-  }
-
-  return msg.length > 180 ? msg.slice(0, 180) : msg;
-}
-
 /**
  * Conservative, deterministic smart lookup:
  * - Exact/synonym dataset match wins immediately
@@ -483,11 +536,20 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
       if (__DEV__) console.log('SFL:stage=exact');
       logDev('exact_match', `input="${normalizedInput}" species=${species}`);
       const direct = foodLookup(normalizedInput);
+      const entry = lookupDatasetEntry(normalizedInput);
+      const matchedHazards =
+        direct.verdict === 'TOXIC' && entry && alwaysToxicSet.has(entry.id) ? [entry.id] : [];
       const result = buildResult(
-        direct,
+        {
+          verdict: direct.verdict,
+          canonicalName: direct.canonicalName,
+          explanation: explanationForDatasetExact(direct.verdict, matchedHazards),
+          action: actionForDatasetExact(direct.verdict),
+          color: direct.color,
+        },
         'dataset_exact',
         [direct.canonicalName],
-        direct.verdict === 'TOXIC' ? [direct.canonicalName] : [],
+        matchedHazards,
       );
       await setCachedResult(normalizedInput, species, result);
       if (__DEV__) {
@@ -508,6 +570,8 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
       }
       return capResult({
         ...cached,
+        explanation: RESULT_CACHE_EXPLANATION,
+        action: baseActionForVerdict(cached.verdict),
         provenance: 'result_cache',
         confidenceLabel: getConfidenceLabel('result_cache'),
         matchedIngredients: Array.isArray(cached.matchedIngredients) ? cached.matchedIngredients : [cached.canonicalName],
@@ -675,15 +739,12 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
           // Use USDA ingredients - build result
           const hazardList = Array.from(allHazardIds);
           if (hasAlwaysToxicHazard) {
+            const hazardIds = Array.from(allHazardIds).filter((id) => alwaysToxicSet.has(id));
             const result = buildResult(
               {
                 verdict: 'TOXIC',
                 canonicalName: normalizedInput,
-                explanation: buildExplanationFromIngredients(mapped, {
-                  version: '1',
-                  normalizedName: normalizedInput,
-                  likelyIngredients: ingredientTokens,
-                } as DecompositionResponse, false),
+                explanation: explanationForUsda('TOXIC', hazardIds, false),
                 action: baseActionForVerdict('TOXIC'),
                 color: getVerdictColor('TOXIC'),
               },
@@ -703,15 +764,12 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
           }
 
           const { verdict, downgraded } = aggregateVerdict(normalizedInput, mapped, ingredientAliases);
+          const hazardIds = Array.from(allHazardIds);
           const result = buildResult(
             {
               verdict,
               canonicalName: normalizedInput,
-              explanation: buildExplanationFromIngredients(mapped, {
-                version: '1',
-                normalizedName: normalizedInput,
-                likelyIngredients: ingredientTokens,
-              } as DecompositionResponse, downgraded),
+              explanation: explanationForUsda(verdict, hazardIds, downgraded),
               action: baseActionForVerdict(verdict),
               color: getVerdictColor(verdict),
             },
@@ -855,8 +913,8 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
           {
             verdict: 'TOXIC',
             canonicalName: normalizedInput,
-            explanation: buildExplanationFromIngredients(mapped, decomposition, false),
-            action: baseActionForVerdict('TOXIC'),
+            explanation: explanationForDecomp('TOXIC', decompHazards, false),
+            action: actionForDecomp('TOXIC'),
             color: getVerdictColor('TOXIC'),
           },
           decompositionProvenance,
@@ -885,8 +943,8 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
         {
           verdict,
           canonicalName: normalizedInput,
-          explanation: buildExplanationFromIngredients(mapped, decomposition, downgraded),
-          action: baseActionForVerdict(verdict),
+          explanation: explanationForDecomp(verdict, decompHazards, downgraded),
+          action: actionForDecomp(verdict),
           color: getVerdictColor(verdict),
         },
         decompositionProvenance,
