@@ -226,11 +226,11 @@ Task 3 — Copy polish: reduced repetition in verdict explanations (2026-01-29).
 
 ---
 
-## Task 4 — Local history (last 10 checks) with rerun (planned)
+## Task 4 — Local history (last 10 checks) with rerun (2026-01-29)
 
-Goal:
-Add a small, local-only history to reduce friction and reinforce trust without expanding scope.
+Local-only history of the last 10 food checks; tap to rerun, clear option. No scope expansion—surfaces past certainty without new capability.
 
+---
 
 ## Summary
 

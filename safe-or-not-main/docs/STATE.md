@@ -100,5 +100,6 @@ Add local history (last 10 checks) with rerun.
 
 - **Current Phase:** Trust & Confidence Surfacing
 - **Last Completed Task:** Task 3 — Unified explanation and action copy (provenance-honest)
-- **Current Working Branch:** phase/trust-confidence
+- **Current Working Branch:** task/local-history
 - **Next Task:** Add local history (last 10 checks) with rerun
+- **Workflow roles:** Cursor implements code changes. ChatGPT provides guidance and review.
