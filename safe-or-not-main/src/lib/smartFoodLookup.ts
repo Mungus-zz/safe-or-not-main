@@ -7,7 +7,14 @@ import {
   setCachedDecomposition,
 } from '@/src/lib/decompositionCache';
 import { getCachedResult, setCachedResult } from '@/src/lib/lookupResultCache';
-import { foodLookup, normalizeInput, type FoodLookupResult } from '@/src/lib/foodLookup';
+import {
+  foodLookup,
+  getConfidenceLabel,
+  normalizeInput,
+  type BaseFoodLookupResult,
+  type FoodLookupResult,
+  type ProvenanceType,
+} from '@/src/lib/foodLookup';
 import { usdaSearch, usdaFoodDetails } from '@/src/lib/usdaClient';
 import { extractIngredientsText } from '@/src/lib/usdaIngredients';
 import { getUsdaCached, setUsdaCached } from '@/src/lib/usdaCache';
@@ -89,6 +96,21 @@ function capResult(result: FoodLookupResult): FoodLookupResult {
     explanation: capText(result.explanation, MAX_EXPLANATION_CHARS),
     action: capText(result.action, MAX_ACTION_CHARS),
   };
+}
+
+function buildResult(
+  base: BaseFoodLookupResult,
+  provenance: ProvenanceType,
+  matchedIngredients: string[],
+  matchedHazards: string[],
+): FoodLookupResult {
+  return capResult({
+    ...base,
+    provenance,
+    confidenceLabel: getConfidenceLabel(provenance),
+    matchedIngredients,
+    matchedHazards,
+  });
 }
 
 function getVerdictColor(verdict: VerdictType): string {
@@ -460,13 +482,19 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
     if (datasetMatchExists(normalizedInput)) {
       if (__DEV__) console.log('SFL:stage=exact');
       logDev('exact_match', `input="${normalizedInput}" species=${species}`);
-      const direct = capResult(foodLookup(normalizedInput));
-      await setCachedResult(normalizedInput, species, direct);
+      const direct = foodLookup(normalizedInput);
+      const result = buildResult(
+        direct,
+        'dataset_exact',
+        [direct.canonicalName],
+        direct.verdict === 'TOXIC' ? [direct.canonicalName] : [],
+      );
+      await setCachedResult(normalizedInput, species, result);
       if (__DEV__) {
         const totalMs = Date.now() - startTime;
         console.log(`SFL:total_ms=${totalMs}`);
       }
-      return direct;
+      return result;
     }
 
     // 4) Result cache (after typo correction and exact match)
@@ -478,7 +506,13 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
         const totalMs = Date.now() - startTime;
         console.log(`SFL:total_ms=${totalMs}`);
       }
-      return capResult(cached);
+      return capResult({
+        ...cached,
+        provenance: 'result_cache',
+        confidenceLabel: getConfidenceLabel('result_cache'),
+        matchedIngredients: Array.isArray(cached.matchedIngredients) ? cached.matchedIngredients : [cached.canonicalName],
+        matchedHazards: Array.isArray(cached.matchedHazards) ? cached.matchedHazards : [],
+      });
     }
 
     // 4) USDA lookup (cache + API)
@@ -639,18 +673,24 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
           }
         } else {
           // Use USDA ingredients - build result
+          const hazardList = Array.from(allHazardIds);
           if (hasAlwaysToxicHazard) {
-            const result: FoodLookupResult = capResult({
-              verdict: 'TOXIC',
-              canonicalName: normalizedInput,
-              explanation: buildExplanationFromIngredients(mapped, {
-                version: '1',
-                normalizedName: normalizedInput,
-                likelyIngredients: ingredientTokens,
-              } as DecompositionResponse, false),
-              action: baseActionForVerdict('TOXIC'),
-              color: getVerdictColor('TOXIC'),
-            });
+            const result = buildResult(
+              {
+                verdict: 'TOXIC',
+                canonicalName: normalizedInput,
+                explanation: buildExplanationFromIngredients(mapped, {
+                  version: '1',
+                  normalizedName: normalizedInput,
+                  likelyIngredients: ingredientTokens,
+                } as DecompositionResponse, false),
+                action: baseActionForVerdict('TOXIC'),
+                color: getVerdictColor('TOXIC'),
+              },
+              'usda_ingredients',
+              ingredientTokens,
+              hazardList,
+            );
             await setCachedResult(normalizedInput, species, result);
             if (__DEV__) {
               const totalMs = Date.now() - startTime;
@@ -663,17 +703,22 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
           }
 
           const { verdict, downgraded } = aggregateVerdict(normalizedInput, mapped, ingredientAliases);
-          const result: FoodLookupResult = capResult({
-            verdict,
-            canonicalName: normalizedInput,
-            explanation: buildExplanationFromIngredients(mapped, {
-              version: '1',
-              normalizedName: normalizedInput,
-              likelyIngredients: ingredientTokens,
-            } as DecompositionResponse, downgraded),
-            action: baseActionForVerdict(verdict),
-            color: getVerdictColor(verdict),
-          });
+          const result = buildResult(
+            {
+              verdict,
+              canonicalName: normalizedInput,
+              explanation: buildExplanationFromIngredients(mapped, {
+                version: '1',
+                normalizedName: normalizedInput,
+                likelyIngredients: ingredientTokens,
+              } as DecompositionResponse, downgraded),
+              action: baseActionForVerdict(verdict),
+              color: getVerdictColor(verdict),
+            },
+            'usda_ingredients',
+            ingredientTokens,
+            hazardList,
+          );
           await setCachedResult(normalizedInput, species, result);
           if (__DEV__) {
             const totalMs = Date.now() - startTime;
@@ -699,7 +744,9 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
 
       // Decomposition cache check (just before calling LLM)
       let decomposition = await getCachedDecomposition(normalizedInput, species);
+      let decompositionProvenance: 'decomp_cache' | 'llm_decomposition' = 'llm_decomposition';
       if (decomposition) {
+        decompositionProvenance = 'decomp_cache';
         if (__DEV__) console.log('SFL:stage=decomp_cache');
         logDev('decomp_cache_hit', `input="${normalizedInput}" species=${species}`);
       }
@@ -712,7 +759,7 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
         if (!decomposition) {
           // existing UNKNOWN / VET FIRST behavior
           logDev('decomp_returned_null', `input="${normalizedInput}" species=${species}`);
-          const fallback = capResult(foodLookup(input));
+          const fallback = buildResult(foodLookup(input), 'fallback_unknown', [], []);
           await setCachedResult(normalizedInput, species, fallback);
           if (__DEV__) {
             const totalMs = Date.now() - startTime;
@@ -723,6 +770,7 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
           }
           return fallback;
         }
+        decompositionProvenance = 'llm_decomposition';
         await setCachedDecomposition(normalizedInput, species, decomposition);
       }
 
@@ -773,7 +821,7 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
       // If ingredient coverage is weak, fall back to UNKNOWN / VET FIRST
       if (mapped.length < 1) {
         logDev('mapped_count_verdict', `mapped=0 verdict=VET_FIRST input="${normalizedInput}" species=${species}`);
-        const fallback = capResult(foodLookup(input));
+        const fallback = buildResult(foodLookup(input), 'fallback_unknown', [], []);
         await setCachedResult(normalizedInput, species, fallback);
         if (__DEV__) {
           const totalMs = Date.now() - startTime;
@@ -796,18 +844,25 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
 
       // 6) Aggregate verdicts conservatively
       // If any always-toxic hazard detected in decomposed ingredients, force TOXIC
+      const decompIngredients = decomposition.likelyIngredients ?? [];
+      const decompHazards = Array.from(allHazardIds);
       if (hasAlwaysToxicHazard) {
         logDev(
           'mapped_count_verdict',
           `mapped=${mapped.length} verdict=TOXIC always_toxic_hazard=true input="${normalizedInput}" species=${species}`,
         );
-        const result: FoodLookupResult = capResult({
-          verdict: 'TOXIC',
-          canonicalName: normalizedInput,
-          explanation: buildExplanationFromIngredients(mapped, decomposition, false),
-          action: baseActionForVerdict('TOXIC'),
-          color: getVerdictColor('TOXIC'),
-        });
+        const result = buildResult(
+          {
+            verdict: 'TOXIC',
+            canonicalName: normalizedInput,
+            explanation: buildExplanationFromIngredients(mapped, decomposition, false),
+            action: baseActionForVerdict('TOXIC'),
+            color: getVerdictColor('TOXIC'),
+          },
+          decompositionProvenance,
+          decompIngredients,
+          decompHazards,
+        );
         await setCachedResult(normalizedInput, species, result);
         if (__DEV__) {
           const totalMs = Date.now() - startTime;
@@ -826,13 +881,18 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
       );
 
       // 7) Build result
-      const result: FoodLookupResult = capResult({
-        verdict,
-        canonicalName: normalizedInput,
-        explanation: buildExplanationFromIngredients(mapped, decomposition, downgraded),
-        action: baseActionForVerdict(verdict),
-        color: getVerdictColor(verdict),
-      });
+      const result = buildResult(
+        {
+          verdict,
+          canonicalName: normalizedInput,
+          explanation: buildExplanationFromIngredients(mapped, decomposition, downgraded),
+          action: baseActionForVerdict(verdict),
+          color: getVerdictColor(verdict),
+        },
+        decompositionProvenance,
+        decompIngredients,
+        decompHazards,
+      );
       await setCachedResult(normalizedInput, species, result);
       if (__DEV__) {
         const totalMs = Date.now() - startTime;
@@ -846,7 +906,7 @@ export async function smartFoodLookup(input: string, species: Species): Promise<
   } catch {
     // Never throw
     logDev('fallback_vet_first_error', `input="${normalizedInput}" species=${species}`);
-    const fallback = capResult(foodLookup(input));
+    const fallback = buildResult(foodLookup(input), 'fallback_unknown', [], []);
     try {
       await setCachedResult(normalizedInput, species, fallback);
     } catch {

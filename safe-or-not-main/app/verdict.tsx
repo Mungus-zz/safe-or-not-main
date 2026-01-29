@@ -29,6 +29,10 @@ export default function VerdictScreen() {
     explanation: string;
     action: string;
     color: string;
+    provenance?: string;
+    confidenceLabel?: string;
+    matchedIngredients?: string;
+    matchedHazards?: string;
   }>();
   const insets = useSafeAreaInsets();
   const screenMotion = useFadeUpMotion();
@@ -41,6 +45,31 @@ export default function VerdictScreen() {
     explanation: params.explanation || 'Safety can vary by preparation or portion size.',
     action: params.action || 'When unsure, contact your vet first.',
   };
+  const provenance = params.provenance ?? '';
+  const confidenceLabel = params.confidenceLabel ?? 'Unknown, check with vet';
+  const matchedIngredients: string[] = (() => {
+    try {
+      if (typeof params.matchedIngredients === 'string' && params.matchedIngredients) {
+        const parsed = JSON.parse(params.matchedIngredients) as unknown;
+        return Array.isArray(parsed) ? (parsed as string[]) : [];
+      }
+    } catch {
+      // ignore
+    }
+    return [];
+  })();
+  const matchedHazards: string[] = (() => {
+    try {
+      if (typeof params.matchedHazards === 'string' && params.matchedHazards) {
+        const parsed = JSON.parse(params.matchedHazards) as unknown;
+        return Array.isArray(parsed) ? (parsed as string[]) : [];
+      }
+    } catch {
+      // ignore
+    }
+    return [];
+  })();
+  // provenance, confidenceLabel, matchedIngredients, matchedHazards available for future UI
 
   const handleBack = () => {
     if (isLeavingRef.current) return;

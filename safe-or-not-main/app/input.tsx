@@ -41,6 +41,10 @@ export default function InputScreen() {
           explanation: lookupResult.explanation,
           action: lookupResult.action,
           color: lookupResult.color,
+          provenance: lookupResult.provenance,
+          confidenceLabel: lookupResult.confidenceLabel,
+          matchedIngredients: JSON.stringify(lookupResult.matchedIngredients),
+          matchedHazards: JSON.stringify(lookupResult.matchedHazards),
         },
       });
     } finally {

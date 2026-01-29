@@ -3,12 +3,45 @@ import Colors from '@/constants/colors';
 
 type VerdictType = 'SAFE' | 'TOXIC' | 'VET FIRST';
 
-export interface FoodLookupResult {
+export type ProvenanceType =
+  | 'dataset_exact'
+  | 'result_cache'
+  | 'usda_ingredients'
+  | 'decomp_cache'
+  | 'llm_decomposition'
+  | 'fallback_unknown';
+
+export function getConfidenceLabel(provenance: ProvenanceType): string {
+  switch (provenance) {
+    case 'dataset_exact':
+      return 'Confirmed from built-in list';
+    case 'result_cache':
+      return 'Confirmed from recent check';
+    case 'usda_ingredients':
+      return 'Verified from ingredient list';
+    case 'decomp_cache':
+    case 'llm_decomposition':
+      return 'Dish ingredients can vary';
+    case 'fallback_unknown':
+    default:
+      return 'Unknown, check with vet';
+  }
+}
+
+/** Base result from foodLookup (no provenance). Extended by smart lookup. */
+export type BaseFoodLookupResult = {
   verdict: VerdictType;
   canonicalName: string;
   explanation: string;
   action: string;
   color: string;
+};
+
+export interface FoodLookupResult extends BaseFoodLookupResult {
+  provenance: ProvenanceType;
+  confidenceLabel: string;
+  matchedIngredients: string[];
+  matchedHazards: string[];
 }
 
 /**
@@ -116,10 +149,10 @@ function chooseBestMatch(
 }
 
 /**
- * Looks up a food in the dataset and returns verdict data.
+ * Looks up a food in the dataset and returns verdict data (no provenance).
  * Returns VET FIRST as default for unknown foods.
  */
-export function foodLookup(input: string): FoodLookupResult {
+export function foodLookup(input: string): BaseFoodLookupResult {
   const normalized = normalizeInput(input);
 
   if (!normalized) {
