@@ -3,7 +3,7 @@ The foolproof continuity protocol (use this every time)
 **Current staging (Task 4)**  
 - **Phase:** Trust & Confidence Surfacing  
 - **Branches:** Authoritative phase branch: phase/trust-confidence. Current working branch: task/local-history  
-- **Task status:** Last completed: Task 3 — Unified explanation and action copy (provenance-honest). Next: Task 4 — Add local history (last 10 checks) with rerun  
+- **Task status:** Last completed: Task 4 — Local history (last 10 checks) with rerun. Next: Autocomplete refinement (or next phase task)  
 - **Cursor implements. ChatGPT guides and reviews.**
 
 ---

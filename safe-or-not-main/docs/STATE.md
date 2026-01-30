@@ -61,6 +61,7 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 - Lookup results include provenance + confidence metadata
 - Verdict screen surfaces confidence label derived from lookup provenance
 - Explanations and actions unified and provenance-honest; final copy polish applied to reduce repetition in verdict explanations
+- Local history (last 10 checks) with tap-to-rerun and clear; local-only storage
 
 ## Branch Reality
 - main: earlier deterministic baseline
@@ -94,12 +95,12 @@ Make existing correct answers feel inevitable, calm, and trustworthy without add
 - Educational content
 
 ## Next Task (authoritative)
-Add local history (last 10 checks) with rerun.
+Autocomplete refinement (or next phase task).
 
 ## Handoff Snapshot
 
 - **Current Phase:** Trust & Confidence Surfacing
-- **Last Completed Task:** Task 3 — Unified explanation and action copy (provenance-honest)
+- **Last Completed Task:** Task 4 — Local history (last 10 checks) with rerun
 - **Current Working Branch:** task/local-history
-- **Next Task:** Add local history (last 10 checks) with rerun
+- **Next Task:** Autocomplete refinement (or next phase task)
 - **Workflow roles:** Cursor implements code changes. ChatGPT provides guidance and review.

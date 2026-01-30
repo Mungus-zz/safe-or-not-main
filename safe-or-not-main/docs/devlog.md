@@ -228,10 +228,10 @@ Task 3 — Copy polish: reduced repetition in verdict explanations (2026-01-29).
 
 ## Task 4 — Local history (last 10 checks) with rerun (2026-01-29)
 
-Local-only history of the last 10 food checks; tap to rerun, clear option. No scope expansion—surfaces past certainty without new capability.
+Local-only history of the last 10 food checks; tap to rerun, clear option. No scope expansion—surfaces past certainty without new capability. Implemented: AsyncStorage-backed check history (normalized input, canonical name, verdict, provenance, timestamp); input screen shows “Recent checks” list with verdict indicator and clear action; tap item reruns smartFoodLookup and navigates to verdict same as a fresh check. Fixed useFocusEffect import source (@react-navigation/native).
 
 ---
 
 ## Summary
 
-The MVP now has: local JSON lookup with priority and sugar-free/xylitol rule; Expo Router layout without backend; Figma-aligned visuals and motion; refined microcopy; OpenRouter/DeepSeek client with timeout and 429 fast-fail; decomposition module with validation and name guard; decomposition, USDA, and result caches; USDA client and ingredient extraction; smart lookup pipeline with USDA + LLM fallback and conservative verdict aggregation; loading guard on submit; and local-dataset autocomplete with prefix match and keyboard handling. All caches use 30-day TTL and versioned keys; dev logging is gated by `__DEV__`.
+The MVP now has: local JSON lookup with priority and sugar-free/xylitol rule; Expo Router layout without backend; Figma-aligned visuals and motion; refined microcopy; OpenRouter/DeepSeek client with timeout and 429 fast-fail; decomposition module with validation and name guard; decomposition, USDA, and result caches; USDA client and ingredient extraction; smart lookup pipeline with USDA + LLM fallback and conservative verdict aggregation; loading guard on submit; local-dataset autocomplete with prefix match and keyboard handling; and local history (last 10 checks) with tap-to-rerun and clear. All caches use 30-day TTL and versioned keys; dev logging is gated by `__DEV__`.
