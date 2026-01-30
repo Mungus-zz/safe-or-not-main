@@ -62,6 +62,7 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 - Verdict screen surfaces confidence label derived from lookup provenance
 - Explanations and actions unified and provenance-honest; final copy polish applied to reduce repetition in verdict explanations
 - Local history (last 10 checks) with tap-to-rerun and clear; local-only storage
+- Deterministic verdict explanation line (Task 1): single “why” line per verdict from verdictExplanation.ts; no verdict or pipeline changes
 
 ## Branch Reality
 - main: earlier deterministic baseline
@@ -74,12 +75,12 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 
 ## Phase Status
 - Trust & Confidence Surfacing: **Complete**
-- Next phase: **Enhanced Verdict Explanations: Staged**
+- Enhanced Verdict Explanations: **In progress** (Task 1 complete)
 
 ## Current Phase
-Enhanced Verdict Explanations (staged)
+Enhanced Verdict Explanations
 
-**Phase Status:** Staged (not started).  
+**Phase Status:** In progress.  
 **Source of truth for this phase:** docs/PHASE_ENHANCED_VERDICT.md
 
 ## Phase Goal
@@ -92,15 +93,15 @@ See docs/PHASE_ENHANCED_VERDICT.md.
 See docs/PHASE_ENHANCED_VERDICT.md.
 
 ## Next Task (authoritative)
-Task 1 — Deterministic Explanation Mapping
+Task 2 — Hazard Grounding (see docs/PHASE_ENHANCED_VERDICT.md)
 
 ## Handoff Snapshot
 
-- **Current Phase:** Enhanced Verdict Explanations (staged)
-- **Phase Status:** Staged (not started)
-- **Last Completed Task:** Task 6 — Network resilience (Trust & Confidence Surfacing)
-- **Current Task:** None (phase staged)
+- **Current Phase:** Enhanced Verdict Explanations
+- **Phase Status:** In progress (Task 1 complete)
+- **Last Completed Task:** Task 1 — Deterministic Explanation Mapping
+- **Current Task:** None (Task 1 done; next: Task 2)
 - **Current Working Branch:** phase/trust-confidence
-- **Next Task:** Task 1 — Deterministic Explanation Mapping
+- **Next Task:** Task 2 — Hazard Grounding
 - **Phase source of truth:** docs/PHASE_ENHANCED_VERDICT.md
 - **Workflow roles:** Cursor implements code changes. ChatGPT provides guidance and review.
