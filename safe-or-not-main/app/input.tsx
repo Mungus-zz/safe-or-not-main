@@ -17,6 +17,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '@/constants/colors';
 import { Radii, Shadows } from '@/constants/theme';
 import {
+  getFoodSuggestions,
+  type FoodSuggestion,
+} from '@/src/lib/autocompleteFoods';
+import {
   addCheckEntry,
   clearCheckHistory,
   getCheckHistory,
@@ -30,11 +34,18 @@ export default function InputScreen() {
   const [foodInput, setFoodInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [history, setHistory] = useState<CheckHistoryEntry[]>([]);
+  const [hideSuggestionsUntilChange, setHideSuggestionsUntilChange] = useState(false);
   const insets = useSafeAreaInsets();
   const screenMotion = useFadeUpMotion();
 
   const isButtonDisabled = !foodInput.trim();
   const isCheckDisabled = isButtonDisabled || isLoading;
+
+  const suggestions: FoodSuggestion[] =
+    !hideSuggestionsUntilChange && !isLoading && foodInput.trim()
+      ? getFoodSuggestions(foodInput.trim(), 12)
+      : [];
+  const showSuggestions = suggestions.length > 0;
 
   useFocusEffect(
     useCallback(() => {
@@ -49,6 +60,7 @@ export default function InputScreen() {
   );
 
   const navigateToVerdict = (lookupResult: Awaited<ReturnType<typeof smartFoodLookup>>) => {
+    setHideSuggestionsUntilChange(true);
     router.push({
       pathname: '/verdict',
       params: {
@@ -129,12 +141,42 @@ export default function InputScreen() {
               placeholder="Type a food"
               placeholderTextColor={Colors.textMuted}
               value={foodInput}
-              onChangeText={setFoodInput}
+              onChangeText={(text) => {
+                setFoodInput(text);
+                setHideSuggestionsUntilChange(false);
+              }}
               autoCapitalize="none"
               autoCorrect={false}
               testID="food-input"
             />
           </View>
+
+          {showSuggestions && (
+            <View style={styles.suggestionsContainer}>
+              <ScrollView
+                style={styles.suggestionsList}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+              >
+                {suggestions.map((suggestion, index) => (
+                  <TouchableOpacity
+                    key={`${suggestion.id}-${suggestion.label}-${index}`}
+                    style={styles.suggestionItem}
+                    onPress={() => {
+                      setFoodInput(suggestion.label);
+                      setHideSuggestionsUntilChange(true);
+                    }}
+                    activeOpacity={0.7}
+                    testID={`suggestion-${index}`}
+                  >
+                    <Text style={styles.suggestionLabel} numberOfLines={1}>
+                      {suggestion.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
 
           <Text style={styles.helperText}>For dogs and cats</Text>
 
@@ -235,6 +277,23 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 12,
+  },
+  suggestionsContainer: {
+    maxHeight: 200,
+    marginBottom: 8,
+  },
+  suggestionsList: {
+    maxHeight: 200,
+  },
+  suggestionItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.inputBorder,
+  },
+  suggestionLabel: {
+    fontSize: 15,
+    color: Colors.text,
   },
   input: {
     borderWidth: 2,

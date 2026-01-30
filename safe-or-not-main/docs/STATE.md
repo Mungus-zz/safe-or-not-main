@@ -101,6 +101,7 @@ Autocomplete refinement (or next phase task).
 
 - **Current Phase:** Trust & Confidence Surfacing
 - **Last Completed Task:** Task 4 — Local history (last 10 checks) with rerun
-- **Current Working Branch:** task/local-history
+- **Current Task:** Task 5 — Autocomplete refinement (UI-only)
+- **Current Working Branch:** task/autocomplete-refinement
 - **Next Task:** Autocomplete refinement (or next phase task)
 - **Workflow roles:** Cursor implements code changes. ChatGPT provides guidance and review.

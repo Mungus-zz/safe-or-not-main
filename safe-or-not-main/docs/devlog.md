@@ -232,6 +232,12 @@ Local-only history of the last 10 food checks; tap to rerun, clear option. No sc
 
 ---
 
+## Task 5 — Autocomplete refinement (UI-only)
+
+Autocomplete suggestions on the Input screen: UI-only, assistive, local dataset only. On text change, show up to 12 prefix-matched suggestions (canonical names first, then synonyms) under the input; tap fills the field and dismisses the list without triggering a lookup. Suggestions clear when input is empty, when loading, or when navigating to verdict. No verdict logic or lookup pipeline changes; no new data sources, analytics, or network.
+
+---
+
 ## Summary
 
 The MVP now has: local JSON lookup with priority and sugar-free/xylitol rule; Expo Router layout without backend; Figma-aligned visuals and motion; refined microcopy; OpenRouter/DeepSeek client with timeout and 429 fast-fail; decomposition module with validation and name guard; decomposition, USDA, and result caches; USDA client and ingredient extraction; smart lookup pipeline with USDA + LLM fallback and conservative verdict aggregation; loading guard on submit; local-dataset autocomplete with prefix match and keyboard handling; and local history (last 10 checks) with tap-to-rerun and clear. All caches use 30-day TTL and versioned keys; dev logging is gated by `__DEV__`.
