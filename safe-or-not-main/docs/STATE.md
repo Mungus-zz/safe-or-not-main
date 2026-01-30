@@ -95,13 +95,13 @@ Make existing correct answers feel inevitable, calm, and trustworthy without add
 - Educational content
 
 ## Next Task (authoritative)
-Autocomplete refinement (or next phase task).
+TBD — next trust-surfacing task to be staged.
 
 ## Handoff Snapshot
 
 - **Current Phase:** Trust & Confidence Surfacing
-- **Last Completed Task:** Task 4 — Local history (last 10 checks) with rerun
-- **Current Task:** Task 5 — Autocomplete refinement (UI-only)
-- **Current Working Branch:** task/autocomplete-refinement
-- **Next Task:** Autocomplete refinement (or next phase task)
+- **Last Completed Task:** Task 5 — Autocomplete refinement (UI-only)
+- **Current Task:** None (phase stable)
+- **Current Working Branch:** phase/trust-confidence
+- **Next Task:** TBD
 - **Workflow roles:** Cursor implements code changes. ChatGPT provides guidance and review.

@@ -1,10 +1,10 @@
 The foolproof continuity protocol (use this every time)
 
-**Current staging (Task 4)**  
+**Current staging (post Task 5)**  
 - **Phase:** Trust & Confidence Surfacing  
-- **Branches:** Authoritative phase branch: phase/trust-confidence. Current working branch: task/local-history  
-- **Task status:** Last completed: Task 4 — Local history (last 10 checks) with rerun. Next: Autocomplete refinement (or next phase task)  
-- **Cursor implements. ChatGPT guides and reviews.**
+- **Branches:** Authoritative phase branch: phase/trust-confidence  
+- **Task status:** Last completed: Task 5 — Autocomplete refinement (UI-only). Current task: None (phase stable). Next: TBD (to be staged explicitly)  
+- **Workflow:** Cursor implements. ChatGPT guides and reviews.
 
 ---
 

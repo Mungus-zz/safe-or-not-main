@@ -234,7 +234,12 @@ Local-only history of the last 10 food checks; tap to rerun, clear option. No sc
 
 ## Task 5 — Autocomplete refinement (UI-only)
 
-Autocomplete suggestions on the Input screen: UI-only, assistive, local dataset only. On text change, show up to 12 prefix-matched suggestions (canonical names first, then synonyms) under the input; tap fills the field and dismisses the list without triggering a lookup. Suggestions clear when input is empty, when loading, or when navigating to verdict. No verdict logic or lookup pipeline changes; no new data sources, analytics, or network.
+- Assistive autocomplete suggestions powered by local foods dataset
+- Prefix-based suggestions (canonical and synonyms), capped at 12
+- Tap fills input only, no auto-run, no behavior change
+- Clears on empty input, loading, or navigation
+- No changes to verdict logic, lookup pipeline, or data sources
+- Docs updated to reflect completion and stable phase state
 
 ---
 
