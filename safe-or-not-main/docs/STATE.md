@@ -73,7 +73,7 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 - phase/trust-confidence (authoritative)
 
 ## Current Phase
-Trust & Confidence Surfacing
+Trust & Confidence Surfacing — **Complete**
 
 ## Phase Goal
 Make existing correct answers feel inevitable, calm, and trustworthy without adding new capability.
@@ -95,13 +95,13 @@ Make existing correct answers feel inevitable, calm, and trustworthy without add
 - Educational content
 
 ## Next Task (authoritative)
-TBD — next trust-surfacing task to be staged.
+None (new phase required).
 
 ## Handoff Snapshot
 
-- **Current Phase:** Trust & Confidence Surfacing
-- **Last Completed Task:** Task 5 — Autocomplete refinement (UI-only)
-- **Current Task:** None (phase stable)
+- **Current Phase:** Trust & Confidence Surfacing — Complete
+- **Last Completed Task:** Task 6 — Network resilience
+- **Current Task:** None
 - **Current Working Branch:** phase/trust-confidence
-- **Next Task:** TBD
+- **Next Task:** None (new phase required)
 - **Workflow roles:** Cursor implements code changes. ChatGPT provides guidance and review.
