@@ -72,36 +72,35 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 ## Active Development Baseline
 - phase/trust-confidence (authoritative)
 
+## Phase Status
+- Trust & Confidence Surfacing: **Complete**
+- Next phase: **Enhanced Verdict Explanations: Staged**
+
 ## Current Phase
-Trust & Confidence Surfacing — **Complete**
+Enhanced Verdict Explanations (staged)
+
+**Phase Status:** Staged (not started).  
+**Source of truth for this phase:** docs/PHASE_ENHANCED_VERDICT.md
 
 ## Phase Goal
-Make existing correct answers feel inevitable, calm, and trustworthy without adding new capability.
+See docs/PHASE_ENHANCED_VERDICT.md for phase goal, tasks, and constraints.
 
 ## In Scope (this phase)
-- Confidence and provenance surfacing
-- Deterministic explanation unification
-- Honest trust language
-- Local history (private utility)
-- UI microcopy refinement
-- Network resilience polish
+See docs/PHASE_ENHANCED_VERDICT.md.
 
 ## Explicitly Out of Scope
-- New intelligence or data sources
-- New verdict logic
-- Emergency features
-- Reports or exports
-- Accounts or cloud sync
-- Educational content
+See docs/PHASE_ENHANCED_VERDICT.md.
 
 ## Next Task (authoritative)
-None (new phase required).
+Task 1 — Deterministic Explanation Mapping
 
 ## Handoff Snapshot
 
-- **Current Phase:** Trust & Confidence Surfacing — Complete
-- **Last Completed Task:** Task 6 — Network resilience
-- **Current Task:** None
+- **Current Phase:** Enhanced Verdict Explanations (staged)
+- **Phase Status:** Staged (not started)
+- **Last Completed Task:** Task 6 — Network resilience (Trust & Confidence Surfacing)
+- **Current Task:** None (phase staged)
 - **Current Working Branch:** phase/trust-confidence
-- **Next Task:** None (new phase required)
+- **Next Task:** Task 1 — Deterministic Explanation Mapping
+- **Phase source of truth:** docs/PHASE_ENHANCED_VERDICT.md
 - **Workflow roles:** Cursor implements code changes. ChatGPT provides guidance and review.

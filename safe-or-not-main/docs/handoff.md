@@ -1,9 +1,11 @@
 The foolproof continuity protocol (use this every time)
 
-**Current staging (phase complete)**  
-- **Phase:** Trust & Confidence Surfacing — Complete  
+**Current staging (next phase staged)**  
+- **Phase:** Enhanced Verdict Explanations (staged)  
+- **Source of truth:** docs/PHASE_ENHANCED_VERDICT.md  
+- **Phase status:** Staged  
 - **Branches:** Authoritative phase branch: phase/trust-confidence  
-- **Task status:** Last completed: Task 6 — Network resilience. Current task: None. Next: None (new phase required)  
+- **Task status:** Last completed: Task 6 — Network resilience. Current task: None. Next task: Task 1 — Deterministic Explanation Mapping  
 - **Workflow:** Cursor implements. ChatGPT guides and reviews.
 
 ---

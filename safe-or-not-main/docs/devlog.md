@@ -249,6 +249,12 @@ Network resilience behavior was already implemented in code; no new code changes
 
 ---
 
+## Staging — Phase Enhanced Verdict Explanations
+
+Phase **Enhanced Verdict Explanations** staged in docs. **docs/PHASE_ENHANCED_VERDICT.md** is the source of truth for the new phase. No code changes in this commit. Next work begins with Task 1 — Deterministic Explanation Mapping on a new task branch.
+
+---
+
 ## Summary
 
 The MVP now has: local JSON lookup with priority and sugar-free/xylitol rule; Expo Router layout without backend; Figma-aligned visuals and motion; refined microcopy; OpenRouter/DeepSeek client with timeout and 429 fast-fail; decomposition module with validation and name guard; decomposition, USDA, and result caches; USDA client and ingredient extraction; smart lookup pipeline with USDA + LLM fallback and conservative verdict aggregation; loading guard on submit; local-dataset autocomplete with prefix match and keyboard handling; and local history (last 10 checks) with tap-to-rerun and clear. All caches use 30-day TTL and versioned keys; dev logging is gated by `__DEV__`.
