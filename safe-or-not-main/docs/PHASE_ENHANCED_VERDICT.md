@@ -53,17 +53,33 @@ No probabilistic or inferred language
 
 2. Hazard Grounding
 
-Every explanation must be grounded in one of:
+**Purpose:** Ground explanations using hazards already produced by the existing pipeline. Presentation only.
 
-A known toxic ingredient
+**Scope:** Applies only to TOXIC and VET FIRST when matched hazards already exist. SAFE unchanged.
 
-A preparation or quantity-dependent risk
+**Rules:**
+- Use only existing matchedHazards
+- Do not infer hazards from ingredients
+- No new detection logic or data sources
+- Deterministic ordering only (alphabetical)
+- Display max two hazards
 
-A confirmed absence of known hazards
+**Behavior:**
+- TOXIC: show grounding when hazards exist
+- VET FIRST: show grounding only when hazards exist
+- VET FIRST without hazards: no grounding
+- SAFE: no grounding
 
-Always-toxic hazards must be explicitly named
+**Copy constraints:**
+- Under five seconds
+- Must name known toxic components when available
+- No dosage math, emergency instructions, or educational content
 
-Unknowns must remain honest about uncertainty
+**Completion criteria:**
+- Grounding shown deterministically where applicable
+- Verdict logic and pipeline unchanged
+- No new inference introduced
+- Docs reflect Task 2 status accurately
 
 3. Explanation Structure
 

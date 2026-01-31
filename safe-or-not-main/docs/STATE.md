@@ -62,7 +62,8 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 - Verdict screen surfaces confidence label derived from lookup provenance
 - Explanations and actions unified and provenance-honest; final copy polish applied to reduce repetition in verdict explanations
 - Local history (last 10 checks) with tap-to-rerun and clear; local-only storage
-- Deterministic verdict explanation line (Task 1): single “why” line per verdict from verdictExplanation.ts; no verdict or pipeline changes
+- Deterministic verdict explanation line (Task 1): single "why" line per verdict from verdictExplanation.ts; no verdict or pipeline changes
+- Hazard grounding support (Task 2): deterministic display of up to two known hazards for TOXIC and VET FIRST verdicts when hazards already exist; SAFE unchanged
 
 ## Branch Reality
 - main: earlier deterministic baseline
@@ -100,8 +101,8 @@ Task 2 — Hazard Grounding (see docs/PHASE_ENHANCED_VERDICT.md)
 - **Current Phase:** Enhanced Verdict Explanations
 - **Phase Status:** In progress (Task 1 complete)
 - **Last Completed Task:** Task 1 — Deterministic Explanation Mapping
-- **Current Task:** None (Task 1 done; next: Task 2)
+- **Current Task:** Task 2 — Hazard Grounding
 - **Current Working Branch:** task/hazard-grounding
-- **Next Task:** Task 2 — Hazard Grounding
+- **Next Task:** TBD
 - **Phase source of truth:** docs/PHASE_ENHANCED_VERDICT.md
 - **Workflow roles:** Cursor implements code changes. ChatGPT provides guidance and review.
