@@ -64,6 +64,7 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 - Local history (last 10 checks) with tap-to-rerun and clear; local-only storage
 - Deterministic verdict explanation line (Task 1): single "why" line per verdict from verdictExplanation.ts; no verdict or pipeline changes
 - Hazard grounding support (Task 2): deterministic display of up to two known hazards for TOXIC and VET FIRST verdicts when hazards already exist; SAFE unchanged
+- Explanation structure (Task 3): satisfied by current verdict screen layout; no additional implementation required
 
 ## Branch Reality
 - main: earlier deterministic baseline
