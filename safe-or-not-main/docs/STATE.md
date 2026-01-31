@@ -76,12 +76,12 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 
 ## Phase Status
 - Trust & Confidence Surfacing: **Complete**
-- Enhanced Verdict Explanations: **In progress** (Task 1 and Task 2 complete)
+- Enhanced Verdict Explanations: **Complete**
 
 ## Current Phase
 Enhanced Verdict Explanations
 
-**Phase Status:** In progress.  
+**Phase Status:** Complete.  
 **Source of truth for this phase:** docs/PHASE_ENHANCED_VERDICT.md
 
 ## Phase Goal
@@ -94,15 +94,15 @@ See docs/PHASE_ENHANCED_VERDICT.md.
 See docs/PHASE_ENHANCED_VERDICT.md.
 
 ## Next Task (authoritative)
-TBD (see docs/PHASE_ENHANCED_VERDICT.md for remaining phase tasks)
+TBD
 
 ## Handoff Snapshot
 
 - **Current Phase:** Enhanced Verdict Explanations
-- **Phase Status:** In progress (Task 1 and Task 2 complete)
+- **Phase Status:** Complete
 - **Last Completed Task:** Task 2 — Hazard Grounding
-- **Current Task:** None (Task 2 done; next: TBD)
-- **Current Working Branch:** task/hazard-grounding
+- **Current Task:** None
+- **Current Working Branch:** phase/trust-confidence
 - **Next Task:** TBD
 - **Phase source of truth:** docs/PHASE_ENHANCED_VERDICT.md
 - **Workflow roles:** Cursor implements code changes. ChatGPT provides guidance and review.
