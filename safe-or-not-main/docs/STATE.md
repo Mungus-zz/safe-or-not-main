@@ -101,7 +101,7 @@ Task 2 — Hazard Grounding (see docs/PHASE_ENHANCED_VERDICT.md)
 - **Phase Status:** In progress (Task 1 complete)
 - **Last Completed Task:** Task 1 — Deterministic Explanation Mapping
 - **Current Task:** None (Task 1 done; next: Task 2)
-- **Current Working Branch:** phase/trust-confidence
+- **Current Working Branch:** task/hazard-grounding
 - **Next Task:** Task 2 — Hazard Grounding
 - **Phase source of truth:** docs/PHASE_ENHANCED_VERDICT.md
 - **Workflow roles:** Cursor implements code changes. ChatGPT provides guidance and review.
