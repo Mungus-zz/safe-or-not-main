@@ -255,6 +255,12 @@ Phase **Enhanced Verdict Explanations** staged in docs. **docs/PHASE_ENHANCED_VE
 
 ---
 
+## Task 1 — Deterministic Explanation Mapping (Enhanced Verdict phase)
+
+Added deterministic explanation mapping module and rendered a single concise “why” line on the verdict screen. **src/lib/verdictExplanation.ts** — New: `getVerdictExplanation(params)` returns `{ reasonKey, text }` from verdict, provenance, matchedHazards, matchedIngredients; hazard ids mapped to display names and stable-sorted; precedence rules for TOXIC (known hazard vs generic), VET FIRST (verification failed vs depends), SAFE (no known hazards). **app/verdict.tsx** — Call `getVerdictExplanation` with existing params; render `deterministic.text` directly beneath verdict and confidence label, above food name; existing `verdictData.explanation` and `verdictData.action` unchanged. No changes to verdict logic or lookup pipeline.
+
+---
+
 ## Summary
 
 The MVP now has: local JSON lookup with priority and sugar-free/xylitol rule; Expo Router layout without backend; Figma-aligned visuals and motion; refined microcopy; OpenRouter/DeepSeek client with timeout and 429 fast-fail; decomposition module with validation and name guard; decomposition, USDA, and result caches; USDA client and ingredient extraction; smart lookup pipeline with USDA + LLM fallback and conservative verdict aggregation; loading guard on submit; local-dataset autocomplete with prefix match and keyboard handling; and local history (last 10 checks) with tap-to-rerun and clear. All caches use 30-day TTL and versioned keys; dev logging is gated by `__DEV__`.

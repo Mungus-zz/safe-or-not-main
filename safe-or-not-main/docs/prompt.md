@@ -1,64 +1,108 @@
-## Task 1 — Deterministic Explanation Mapping
+# Cursor Prompt — Enhanced Verdict Explanations — Task 1 (Deterministic Explanation Mapping)
 
-Context  
-This task is part of the **Enhanced Verdict Explanations** phase.  
-The phase source of truth is `docs/PHASE_ENHANCED_VERDICT.md`.
+You are working in the repo: safe-or-not-main
+Authoritative branch: phase/trust-confidence
 
-This task adds explainability only. It does not add intelligence.
+Authoritative docs:
+- docs/HANDOFF.md
+- docs/STATE.md
+- docs/PHASE_ENHANCED_VERDICT.md
 
-ChatGPT is used for guidance and review only.  
-Cursor is responsible for implementation.
+Goal
+Implement Task 1: Deterministic Explanation Mapping.
+Introduce a deterministic, explainable “why” line for every verdict, derived only from existing results and inputs. This improves trust and clarity without changing behavior.
 
----
-
-### Goal
-Create a deterministic explanation layer that produces a concise explanation for every verdict shown to the user.
-
----
-
-### Hard constraints
+Hard constraints
 - Do NOT change verdict logic
 - Do NOT change lookup pipeline order
 - Do NOT add new data sources
-- Do NOT add inference, confidence scores, or probabilities
-- Do NOT add emergency actions or dosing logic
-- Do NOT introduce long-form or educational content
+- Do NOT add confidence scores, probabilities, or inference
+- Do NOT add emergency actions or dose calculations
+- Do NOT add education, long form content, or summaries
+- Explanations must be deterministic and derived from existing results only
+- No UI redesign. Add a single concise line only.
 
----
+Implementation requirements
+1) Create new module: src/lib/verdictExplanation.ts
 
-### Implementation requirements
+Types
+- VerdictType: 'SAFE' | 'TOXIC' | 'VET FIRST'
+- VerdictExplanation: { reasonKey: string; text: string }
 
-1) Explanation mapping
-- Create a deterministic explanation generator keyed by verdict and known result fields
-- Explanations must not vary run-to-run for the same input
-- Mapping must rely only on existing lookup results and failure modes
+Function
+Create a pure function:
 
-2) Explanation rules
-- TOXIC: name the known toxic ingredient or hazard when available
-- VET FIRST: explain the uncertainty or failure condition
-- SAFE: explain absence of known hazards without absolute language
+export function getVerdictExplanation(params: {
+  verdict: VerdictType
+  provenance?: string
+  matchedHazards?: string[] | string
+  matchedIngredients?: string[] | string
+}): VerdictExplanation
 
-3) Output format
-- Single concise explanation per verdict
-- 1–2 sentences maximum
-- No timelines, dosages, or instructions
+Notes
+- matchedHazards and matchedIngredients may be arrays or JSON strings. Handle both deterministically.
+- Stable sort hazard ids alphabetically for deterministic output.
+- Format hazard ids to display names using this mapping:
+  chocolate -> Chocolate
+  xylitol -> Xylitol
+  grapes -> Grapes
+  raisins -> Raisins
+  alcohol -> Alcohol
+  macadamia -> Macadamia nuts
 
-4) UI integration
-- Explanation appears on the verdict screen
-- Must not compete with verdict typography
-- No new screens or interactions
+Precedence rules
+TOXIC
+- If hazards exist, use first formatted hazard after stable sort:
+  reasonKey: toxic_known_hazard
+  text: "Contains {Hazard}, which is a known dog toxin."
+- Else:
+  reasonKey: toxic_generic
+  text: "A known dog toxin was detected in what we checked."
 
----
+VET FIRST
+- If provenance is missing, empty, or unknown like values:
+  reasonKey: vetfirst_verification_failed
+  text: "We could not verify the ingredients reliably, so safety is unclear."
+- Else if hazards exist OR matchedIngredients exist:
+  reasonKey: vetfirst_depends
+  text: "Safety can depend on preparation or amount, so verify the ingredients first."
+- Else:
+  reasonKey: vetfirst_verification_failed
+  text: "We could not verify the ingredients reliably, so safety is unclear."
 
-### Docs updates (required)
-- Update docs/STATE.md to mark Task 1 as in progress or complete
-- Add a dated Task 1 entry to docs/devlog.md
-- Update docs/handoff.md with current task status
+SAFE
+- reasonKey: safe_no_known_hazards
+- text: "No known dog toxins were found in what we checked. Different recipes or portions can change this."
 
----
+2) Integrate into app/verdict.tsx
+- Do not remove or alter existing verdictData.explanation or verdictData.action.
+- Parse matchedHazards and matchedIngredients as currently done, then call getVerdictExplanation:
+  const deterministic = getVerdictExplanation({ verdict: verdictData.verdict, provenance, matchedHazards, matchedIngredients });
+- Render deterministic.text as a single concise line:
+  Placement: directly beneath the verdict and confidence label, above the food name (or equivalent top body content).
+- Styling: reuse existing typography styles, slightly smaller or same as existing explanation style, minimal margin. Keep it readable in under 5 seconds.
 
-### Output
-- List files changed
-- Confirm verdict logic unchanged
-- Confirm lookup pipeline unchanged
-- Confirm explanations are deterministic and local
+3) Docs updates
+- docs/devlog.md
+  Add an entry for Task 1 describing:
+  - Added deterministic explanation mapping module
+  - Rendered deterministic explanation line on verdict screen
+  - Confirmed no changes to verdict logic or lookup pipeline
+- docs/STATE.md
+  Update phase status and Task 1 status per existing conventions.
+- docs/HANDOFF.md
+  Update current task status and next task pointer.
+
+4) Manual checks
+- TOXIC item with hazard present shows hazard in deterministic line
+- Unknown input that fails closed shows vetfirst_verification_failed text
+- SAFE known safe item shows safe_no_known_hazards non absolute text
+
+Deliverables
+- src/lib/verdictExplanation.ts added
+- app/verdict.tsx updated to display deterministic explanation line
+- docs updated (devlog, state, handoff)
+- No other functional changes
+
+Commit message
+Task 1 add deterministic verdict explanations and update docs
