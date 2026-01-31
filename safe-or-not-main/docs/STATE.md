@@ -76,7 +76,7 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 
 ## Phase Status
 - Trust & Confidence Surfacing: **Complete**
-- Enhanced Verdict Explanations: **In progress** (Task 1 complete)
+- Enhanced Verdict Explanations: **In progress** (Task 1 and Task 2 complete)
 
 ## Current Phase
 Enhanced Verdict Explanations
@@ -94,14 +94,14 @@ See docs/PHASE_ENHANCED_VERDICT.md.
 See docs/PHASE_ENHANCED_VERDICT.md.
 
 ## Next Task (authoritative)
-Task 2 — Hazard Grounding (see docs/PHASE_ENHANCED_VERDICT.md)
+TBD (see docs/PHASE_ENHANCED_VERDICT.md for remaining phase tasks)
 
 ## Handoff Snapshot
 
 - **Current Phase:** Enhanced Verdict Explanations
-- **Phase Status:** In progress (Task 1 complete)
-- **Last Completed Task:** Task 1 — Deterministic Explanation Mapping
-- **Current Task:** Task 2 — Hazard Grounding
+- **Phase Status:** In progress (Task 1 and Task 2 complete)
+- **Last Completed Task:** Task 2 — Hazard Grounding
+- **Current Task:** None (Task 2 done; next: TBD)
 - **Current Working Branch:** task/hazard-grounding
 - **Next Task:** TBD
 - **Phase source of truth:** docs/PHASE_ENHANCED_VERDICT.md

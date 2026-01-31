@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '@/constants/colors';
 import { formatFoodName } from '@/utils/formatFood';
 import { runFadeDownExit, useFadeUpMotion } from '@/src/lib/motion';
-import { getVerdictExplanation } from '@/src/lib/verdictExplanation';
+import { getHazardGrounding, getVerdictExplanation } from '@/src/lib/verdictExplanation';
 
 type VerdictType = 'SAFE' | 'TOXIC' | 'VET FIRST';
 
@@ -78,6 +78,11 @@ export default function VerdictScreen() {
     matchedIngredients,
   });
 
+  const grounding = getHazardGrounding({
+    verdict: verdictData.verdict,
+    matchedHazards,
+  });
+
   const handleBack = () => {
     if (isLeavingRef.current) return;
     isLeavingRef.current = true;
@@ -112,6 +117,10 @@ export default function VerdictScreen() {
         <Text style={styles.confidenceLabel}>{confidenceLabel}</Text>
 
         <Text style={styles.deterministicExplanation}>{deterministic.text}</Text>
+
+        {grounding && (
+          <Text style={styles.hazardGrounding}>{grounding.text}</Text>
+        )}
 
         <Text style={styles.foodName}>{formattedFood}</Text>
 
@@ -168,6 +177,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
     lineHeight: 20,
+    paddingHorizontal: 8,
+  },
+  hazardGrounding: {
+    fontSize: 13,
+    fontWeight: '400',
+    color: Colors.textMuted,
+    marginBottom: 16,
+    textAlign: 'center',
+    lineHeight: 18,
     paddingHorizontal: 8,
   },
   foodName: {

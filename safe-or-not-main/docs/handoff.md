@@ -1,11 +1,11 @@
 The foolproof continuity protocol (use this every time)
 
-**Current staging (Task 2 in progress)**  
+**Current staging (Task 2 complete)**  
 - **Phase:** Enhanced Verdict Explanations  
 - **Source of truth:** docs/PHASE_ENHANCED_VERDICT.md  
-- **Phase status:** In progress (Task 1 complete, Task 2 active)  
+- **Phase status:** In progress (Task 1 and Task 2 complete)  
 - **Branches:** Authoritative phase branch: phase/trust-confidence. Current working branch: task/hazard-grounding  
-- **Task status:** Last completed: Task 1 — Deterministic Explanation Mapping. Current: Task 2 — Hazard Grounding  
+- **Task status:** Last completed: Task 2 — Hazard Grounding. Current: None. Next: TBD  
 - **Workflow:** Cursor implements. ChatGPT guides and reviews.
 
 ---

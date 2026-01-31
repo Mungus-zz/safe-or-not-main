@@ -115,3 +115,31 @@ export function getVerdictExplanation(params: {
       };
   }
 }
+
+/**
+ * Returns a hazard grounding display for TOXIC or VET FIRST when hazards exist.
+ * Presentation only; uses existing matchedHazards from the pipeline.
+ */
+export function getHazardGrounding(params: {
+  verdict: VerdictType;
+  matchedHazards?: string[] | string;
+}): { hazards: string[]; text: string } | null {
+  if (params.verdict === 'SAFE') return null;
+
+  const hazardIds = toHazardArray(params.matchedHazards);
+  if (hazardIds.length === 0) return null;
+
+  const sorted = [...hazardIds].map((id) => id.trim().toLowerCase()).sort();
+  const displayNames = [...new Set(sorted)].map(formatHazardId).slice(0, 2);
+  if (displayNames.length === 0) return null;
+
+  const hazardList =
+    displayNames.length === 1
+      ? displayNames[0]
+      : `${displayNames[0]} and ${displayNames[1]}`;
+
+  return {
+    hazards: displayNames,
+    text: `Hazards found: ${hazardList}.`,
+  };
+}

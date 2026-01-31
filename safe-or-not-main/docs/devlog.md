@@ -261,6 +261,12 @@ Added deterministic explanation mapping module and rendered a single concise “
 
 ---
 
+## Task 2 — Hazard Grounding (Enhanced Verdict phase)
+
+Added hazard grounding display for TOXIC and VET FIRST verdicts when matched hazards exist. **src/lib/verdictExplanation.ts** — New: `getHazardGrounding(params)` returns `{ hazards, text } | null`; normalizes matchedHazards from array or JSON string; stable sort alphabetically; maps to display labels using existing mapping; takes up to 2 hazards; returns null for SAFE or empty hazards; text format "Hazards found: {HazardList}." **app/verdict.tsx** — Compute grounding after deterministic line; render conditionally under deterministic explanation, above food name; styling subtle, muted, slightly smaller. No verdict logic or lookup pipeline changes; presentation only.
+
+---
+
 ## Summary
 
 The MVP now has: local JSON lookup with priority and sugar-free/xylitol rule; Expo Router layout without backend; Figma-aligned visuals and motion; refined microcopy; OpenRouter/DeepSeek client with timeout and 429 fast-fail; decomposition module with validation and name guard; decomposition, USDA, and result caches; USDA client and ingredient extraction; smart lookup pipeline with USDA + LLM fallback and conservative verdict aggregation; loading guard on submit; local-dataset autocomplete with prefix match and keyboard handling; and local history (last 10 checks) with tap-to-rerun and clear. All caches use 30-day TTL and versioned keys; dev logging is gated by `__DEV__`.
