@@ -63,6 +63,8 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 - Explanations and actions unified and provenance-honest; final copy polish applied to reduce repetition in verdict explanations
 - Local history (last 10 checks) with tap-to-rerun and clear; local-only storage
 - Deterministic verdict explanation line (Task 1): single “why” line per verdict from verdictExplanation.ts; no verdict or pipeline changes
+- Data-driven toxic routing: always-toxic keywords, hazard aliases, and additive toxins extracted to toxicRouting.json; lookup code reads from data file instead of hardcoded values
+- Composite schema annotations: foods.json entries annotated with type ("composite") and hazardPresence ("always" or "possible") where applicable
 
 ## Branch Reality
 - main: earlier deterministic baseline
@@ -72,36 +74,38 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 
 ## Active Development Baseline
 - phase/trust-confidence (authoritative)
+- task/data-contracts-routing-composites (active work branch)
 
 ## Phase Status
 - Trust & Confidence Surfacing: **Complete**
-- Enhanced Verdict Explanations: **In progress** (Task 1 complete)
+- Enhanced Verdict Explanations: **Complete** (Tasks 1 and 2 implemented; Task 3 satisfied by current structure)
+- Deterministic Coverage Expansion: **In progress**
 
 ## Current Phase
-Enhanced Verdict Explanations
+Deterministic Coverage Expansion
 
-**Phase Status:** In progress.  
-**Source of truth for this phase:** docs/PHASE_ENHANCED_VERDICT.md
+**Phase Status:** In progress  
+**Source of truth for this phase:** docs/PHASE_LOCAL_INTEL_ENHANCEMENT.MD
 
 ## Phase Goal
-See docs/PHASE_ENHANCED_VERDICT.md for phase goal, tasks, and constraints.
+Increase answer fidelity by expanding deterministic local coverage and formalizing data contracts for routing and composites, reducing reliance on fallback, without introducing inference or new data sources.
 
 ## In Scope (this phase)
-See docs/PHASE_ENHANCED_VERDICT.md.
+See docs/PHASE_LOCAL_INTEL_ENHANCEMENT.MD.
 
 ## Explicitly Out of Scope
-See docs/PHASE_ENHANCED_VERDICT.md.
+See docs/PHASE_LOCAL_INTEL_ENHANCEMENT.MD.
 
 ## Next Task (authoritative)
-Task 2 — Hazard Grounding (see docs/PHASE_ENHANCED_VERDICT.md)
+Expand foods.json composites and aliases (curated)
 
 ## Handoff Snapshot
 
-- **Current Phase:** Enhanced Verdict Explanations
-- **Phase Status:** In progress (Task 1 complete)
-- **Last Completed Task:** Task 1 — Deterministic Explanation Mapping
-- **Current Task:** None (Task 1 done; next: Task 2)
-- **Current Working Branch:** phase/trust-confidence
-- **Next Task:** Task 2 — Hazard Grounding
-- **Phase source of truth:** docs/PHASE_ENHANCED_VERDICT.md
+- **Current Phase:** Deterministic Coverage Expansion
+- **Phase Status:** In progress
+- **Last Completed Task:** Data contracts for routing and composites
+- **Current Task:** None
+- **Current Working Branch:** task/data-contracts-routing-composites
+- **Next Task:** Expand foods.json composites and aliases (curated)
+- **Phase source of truth:** docs/PHASE_LOCAL_INTEL_ENHANCEMENT.MD
 - **Workflow roles:** Cursor implements code changes. ChatGPT provides guidance and review.

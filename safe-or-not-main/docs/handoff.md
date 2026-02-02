@@ -1,11 +1,11 @@
 The foolproof continuity protocol (use this every time)
 
-**Current staging (Task 1 complete)**  
-- **Phase:** Enhanced Verdict Explanations  
-- **Source of truth:** docs/PHASE_ENHANCED_VERDICT.md  
-- **Phase status:** In progress (Task 1 complete)  
-- **Branches:** Authoritative phase branch: phase/trust-confidence  
-- **Task status:** Last completed: Task 1 — Deterministic Explanation Mapping. Current task: None. Next task: Task 2 — Hazard Grounding  
+**Current staging (Data contracts complete)**  
+- **Phase:** Deterministic Coverage Expansion  
+- **Source of truth:** docs/PHASE_LOCAL_INTEL_ENHANCEMENT.MD  
+- **Phase status:** In progress  
+- **Branches:** Authoritative phase branch: phase/trust-confidence, Active work branch: task/data-contracts-routing-composites  
+- **Task status:** Last completed: Data contracts for routing and composites. Current task: None. Next task: Expand foods.json composites and aliases (curated)  
 - **Workflow:** Cursor implements. ChatGPT guides and reviews.
 
 ---

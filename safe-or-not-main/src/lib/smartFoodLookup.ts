@@ -1,5 +1,6 @@
 import Colors from '@/constants/colors';
 import foodsData from '@/src/data/foods.json';
+import toxicRoutingData from '@/src/data/toxicRouting.json';
 import { decomposeFood, normalizeUserInputForCompare } from '@/src/lib/decomposeFood';
 import {
   getCachedDecomposition,
@@ -365,52 +366,30 @@ function isMixedDish(normalizedInput: string): boolean {
   return MIXED_DISH_TOKENS.some((token) => lower.includes(token));
 }
 
-const hazardAliasMap: Record<string, string> = {
-  chocolate: 'chocolate',
-  'cocoa': 'chocolate',
-  'cocoa powder': 'chocolate',
-  'dark chocolate': 'chocolate',
-  'milk chocolate': 'chocolate',
-  'chocolate chips': 'chocolate',
-  'baking chocolate': 'chocolate',
-  xylitol: 'xylitol',
-  'sugar-free gum': 'xylitol',
-  'sugar free gum': 'xylitol',
-  'sugar-free candy': 'xylitol',
-  'sugar free candy': 'xylitol',
-  raisins: 'raisins',
-  raisin: 'raisins',
-  grapes: 'grapes',
-  grape: 'grapes',
-  alcohol: 'alcohol',
-  beer: 'alcohol',
-  wine: 'alcohol',
-  liquor: 'alcohol',
-  spirits: 'alcohol',
-  macadamia: 'macadamia',
-  'macadamia nut': 'macadamia',
-  'macadamia nuts': 'macadamia',
-  macadamias: 'macadamia',
-};
+/**
+ * Routing rules loaded from toxicRouting.json.
+ * This allows hazard detection rules to be auditable and data-driven
+ * without changing lookup behavior.
+ *
+ * Tie-break rule: when multiple keywords match, the earliest match
+ * in the alwaysToxicKeywords list order is selected (per matchRules.tieBreakRule).
+ */
+const hazardAliasMap: Record<string, string> = (() => {
+  const map: Record<string, string> = {};
+  const aliases = toxicRoutingData.hazardAliases as Record<string, string[]>;
+  for (const [hazardId, aliasList] of Object.entries(aliases)) {
+    for (const alias of aliasList) {
+      map[alias] = hazardId;
+    }
+  }
+  return map;
+})();
 
-const alwaysToxicSet = new Set([
-  'chocolate',
-  'xylitol',
-  'grapes',
-  'raisins',
-  'alcohol',
-  'macadamia',
-]);
+const alwaysToxicSet = new Set(
+  toxicRoutingData.alwaysToxicKeywords.map((entry) => entry.routeTo),
+);
 
-const additiveToxicSet = new Set([
-  'onion',
-  'garlic',
-  'chives',
-  'leek',
-  'shallot',
-  'onion powder',
-  'garlic powder',
-]);
+const additiveToxicSet = new Set(toxicRoutingData.additiveToxins);
 
 function normalizeToHazardId(ingredient: string): string | null {
   const normalized = normalizeInput(ingredient);

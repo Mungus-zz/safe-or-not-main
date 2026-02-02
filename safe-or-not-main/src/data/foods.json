@@ -211,7 +211,9 @@
       "explanation": "Plain baked bread is generally less concerning, but ingredients and amount consumed matter.",
       "action": "Contact a vet if the product contained toxic ingredients or symptoms occur.",
       "species": ["dog", "cat"],
-      "sources": ["ASPCA Poison Control"]
+      "sources": ["ASPCA Poison Control"],
+      "type": "composite",
+      "hazardPresence": "possible"
     },
     {
       "id": "gum-candy",
@@ -221,7 +223,9 @@
       "explanation": "Risk depends on whether xylitol is present and how much was consumed.",
       "action": "Check ingredients immediately. If xylitol is present, seek veterinary care.",
       "species": ["dog", "cat"],
-      "sources": ["ASPCA Poison Control"]
+      "sources": ["ASPCA Poison Control"],
+      "type": "composite",
+      "hazardPresence": "possible"
     },
     {
       "id": "cocoa-baked-goods",
@@ -231,7 +235,9 @@
       "explanation": "Chocolate and cocoa can be toxic to dogs, including in baked goods.",
       "action": "Contact a vet or poison control immediately.",
       "species": ["dog", "cat"],
-      "sources": ["ASPCA Poison Control"]
+      "sources": ["ASPCA Poison Control"],
+      "type": "composite",
+      "hazardPresence": "always"
     },
     {
       "id": "raisins-cereals",
@@ -241,7 +247,9 @@
       "explanation": "Any raisin-containing food carries kidney risk for dogs, and amount matters.",
       "action": "Contact a vet or poison control promptly.",
       "species": ["dog"],
-      "sources": ["ASPCA Poison Control"]
+      "sources": ["ASPCA Poison Control"],
+      "type": "composite",
+      "hazardPresence": "always"
     },
     {
       "id": "onion-seasonings",
@@ -251,7 +259,9 @@
       "explanation": "Seasonings may contain concentrated allium compounds, and risk depends on amount consumed.",
       "action": "Contact a vet if more than a small taste was eaten or symptoms occur.",
       "species": ["dog", "cat"],
-      "sources": ["ASPCA Poison Control"]
+      "sources": ["ASPCA Poison Control"],
+      "type": "composite",
+      "hazardPresence": "always"
     },
     {
       "id": "citrus-peels",
@@ -271,7 +281,9 @@
       "explanation": "Desserts containing coconut, sugar, and fat may cause digestive upset depending on amount.",
       "action": "Monitor for symptoms and contact a vet if vomiting or diarrhea occurs.",
       "species": ["dog", "cat"],
-      "sources": ["ASPCA Poison Control"]
+      "sources": ["ASPCA Poison Control"],
+      "type": "composite",
+      "hazardPresence": "always"
     },
     {
       "id": "dairy-desserts",
@@ -281,7 +293,9 @@
       "explanation": "Lactose and high fat content may cause digestive upset depending on amount and tolerance.",
       "action": "Contact a vet if symptoms are significant or persistent.",
       "species": ["dog", "cat"],
-      "sources": ["ASPCA Poison Control"]
+      "sources": ["ASPCA Poison Control"],
+      "type": "composite",
+      "hazardPresence": "always"
     },
     {
       "id": "nut-mixes",
@@ -291,7 +305,9 @@
       "explanation": "Nut mixes may include toxic ingredients such as chocolate, raisins, or macadamia nuts.",
       "action": "Identify ingredients and contact a vet if high-risk items were included.",
       "species": ["dog", "cat"],
-      "sources": ["ASPCA Poison Control"]
+      "sources": ["ASPCA Poison Control"],
+      "type": "composite",
+      "hazardPresence": "possible"
     },
     {
       "id": "salty-seasonings",
@@ -301,7 +317,9 @@
       "explanation": "Excess salt exposure can cause illness depending on the amount consumed.",
       "action": "Contact a vet if you suspect significant exposure or symptoms develop.",
       "species": ["dog", "cat"],
-      "sources": ["ASPCA Poison Control"]
+      "sources": ["ASPCA Poison Control"],
+      "type": "composite",
+      "hazardPresence": "always"
     },
     {
       "id": "apple",

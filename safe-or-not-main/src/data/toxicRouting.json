@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "description": "Routing rules for always-toxic hazard detection. This file is a routing table only and does not define new hazards.",
+  "alwaysToxicKeywords": [
+    { "keyword": "chocolate", "routeTo": "chocolate" },
+    { "keyword": "xylitol", "routeTo": "xylitol" },
+    { "keyword": "grapes", "routeTo": "grapes" },
+    { "keyword": "raisins", "routeTo": "raisins" },
+    { "keyword": "alcohol", "routeTo": "alcohol" },
+    { "keyword": "macadamia", "routeTo": "macadamia" }
+  ],
+  "hazardAliases": {
+    "chocolate": ["chocolate", "cocoa", "cocoa powder", "dark chocolate", "milk chocolate", "chocolate chips", "baking chocolate"],
+    "xylitol": ["xylitol", "sugar-free gum", "sugar free gum", "sugar-free candy", "sugar free candy"],
+    "grapes": ["grapes", "grape"],
+    "raisins": ["raisins", "raisin"],
+    "alcohol": ["alcohol", "beer", "wine", "liquor", "spirits"],
+    "macadamia": ["macadamia", "macadamia nut", "macadamia nuts", "macadamias"]
+  },
+  "additiveToxins": ["onion", "garlic", "chives", "leek", "shallot", "onion powder", "garlic powder"],
+  "matchRules": {
+    "normalize": true,
+    "substringAllowed": true,
+    "preferWordBoundary": true,
+    "tieBreakRule": "earliest_in_list"
+  }
+}

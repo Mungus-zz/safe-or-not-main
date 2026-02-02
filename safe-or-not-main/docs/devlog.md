@@ -261,6 +261,20 @@ Added deterministic explanation mapping module and rendered a single concise “
 
 ---
 
+## Data Contracts — Routing Rules and Composite Schema (Deterministic Coverage Expansion phase)
+
+Hardened Path A routing by extracting toxic keyword routing rules into a data file and formalizing composite schema fields.
+
+**src/data/toxicRouting.json** — New: Data-driven routing table containing `alwaysToxicKeywords` (keyword → routeTo mappings for chocolate, xylitol, grapes, raisins, alcohol, macadamia), `hazardAliases` (hazard ID → alias list for robust detection), `additiveToxins` (onion, garlic, chives, etc.), and `matchRules` (normalize, substringAllowed, preferWordBoundary, tieBreakRule).
+
+**src/data/foods.json** — Added `type: "composite"` and `hazardPresence: "always"|"possible"` fields to 9 composite entries: cocoa-baked-goods, raisins-cereals, onion-seasonings, coconut-desserts, dairy-desserts, nut-mixes, salty-seasonings, gum-candy, bread-products.
+
+**src/lib/smartFoodLookup.ts** — Updated to read routing rules from toxicRouting.json instead of hardcoded values: `hazardAliasMap`, `alwaysToxicSet`, `additiveToxicSet` now derived from the data file at module load. Tie-break rule documented in code comment.
+
+No changes to verdict logic, lookup pipeline order, or verdict outcomes. This is a structural refactor for auditability and future scaling.
+
+---
+
 ## Summary
 
 The MVP now has: local JSON lookup with priority and sugar-free/xylitol rule; Expo Router layout without backend; Figma-aligned visuals and motion; refined microcopy; OpenRouter/DeepSeek client with timeout and 429 fast-fail; decomposition module with validation and name guard; decomposition, USDA, and result caches; USDA client and ingredient extraction; smart lookup pipeline with USDA + LLM fallback and conservative verdict aggregation; loading guard on submit; local-dataset autocomplete with prefix match and keyboard handling; and local history (last 10 checks) with tap-to-rerun and clear. All caches use 30-day TTL and versioned keys; dev logging is gated by `__DEV__`.
