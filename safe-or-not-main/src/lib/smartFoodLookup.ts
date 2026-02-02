@@ -1,4 +1,5 @@
 import Colors from '@/constants/colors';
+import { LOOKUP_DEBUG_LOGS } from '@/src/constants/debug';
 import foodsData from '@/src/data/foods.json';
 import toxicRoutingData from '@/src/data/toxicRouting.json';
 import { decomposeFood, normalizeUserInputForCompare } from '@/src/lib/decomposeFood';
@@ -56,7 +57,7 @@ const MAX_EXPLANATION_CHARS = 140;
 const MAX_ACTION_CHARS = 120;
 
 function logDev(label: string, details?: string) {
-  if (!__DEV__) return;
+  if (!__DEV__ && !LOOKUP_DEBUG_LOGS) return;
   // Keep logs minimal + easy to grep.
   // Example: SFL:result_cache_hit input="banana bread" species=dog
   console.log(`SFL:${label}${details ? ` ${details}` : ''}`);

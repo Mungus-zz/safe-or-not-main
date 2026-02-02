@@ -1,4 +1,7 @@
+import { LOOKUP_DEBUG_LOGS } from '@/src/constants/debug';
 import { callDeepSeek, type DeepSeekMessage } from '@/src/lib/deepseekClient';
+
+const shouldLog = () => __DEV__ || LOOKUP_DEBUG_LOGS;
 
 export type DecompositionResponse = {
   version: '1';
@@ -24,17 +27,17 @@ const ALLOWED_KEYS = new Set([
   'notes',
 ]);
 
-if (__DEV__) {
+if (shouldLog()) {
   console.log('DECOMP_MODULE_LOADED_v3');
 }
 
 function logDevReject(code: RejectCode, details?: string) {
-  if (!__DEV__) return;
+  if (!shouldLog()) return;
   console.log(`DECOMP_REJECT:${code}${details ? ` ${details}` : ''}`);
 }
 
 function logDevRawPreview(raw: string) {
-  if (!__DEV__) return;
+  if (!shouldLog()) return;
   const preview = raw.slice(0, 200).replace(/\s+/g, ' ');
   console.log(`DECOMP_RAW:${preview}`);
 }
@@ -332,7 +335,7 @@ export function parseAndValidateDecomposition(raw: string): DecompositionRespons
 }
 
 export async function decomposeFood(userInput: string): Promise<DecompositionResponse | null> {
-  if (__DEV__) {
+  if (shouldLog()) {
     console.log(`DECOMP_ENTER input="${userInput}"`);
   }
 
@@ -351,13 +354,13 @@ export async function decomposeFood(userInput: string): Promise<DecompositionRes
       hasRepeatedChar4;
 
     if (isGarbage) {
-      if (__DEV__) console.log('DECOMP_REJECT:garbage_gate');
+      if (shouldLog()) console.log('DECOMP_REJECT:garbage_gate');
       return null;
     }
 
     const messages = buildDecomposeMessages(userInput);
     
-    if (__DEV__) {
+    if (shouldLog()) {
       console.log('DECOMP_CALLING_MODEL');
     }
 
@@ -366,7 +369,7 @@ export async function decomposeFood(userInput: string): Promise<DecompositionRes
       raw = await callDeepSeek(messages);
     } catch (err) {
       // Fail fast - return null immediately without additional processing
-      if (__DEV__) {
+      if (shouldLog()) {
         // Avoid printing full error bodies - limit to first 100 chars
         const errorMsg = err instanceof Error ? err.message : String(err);
         const preview = errorMsg.slice(0, 100);
@@ -375,19 +378,19 @@ export async function decomposeFood(userInput: string): Promise<DecompositionRes
       return null;
     }
 
-    if (__DEV__) {
+    if (shouldLog()) {
       const preview = raw.slice(0, 120).replace(/\s+/g, ' ');
       console.log(`DECOMP_RAW_PREVIEW:${preview}`);
     }
 
     if (!raw.trim()) {
-      if (__DEV__) console.log('DECOMP_REJECT:empty_raw');
+      if (shouldLog()) console.log('DECOMP_REJECT:empty_raw');
       return null;
     }
 
     const parsed = parseAndValidateDecomposition(raw);
     if (!parsed) {
-      if (__DEV__) console.log('DECOMP_REJECT:parse_or_validate_returned_null');
+      if (shouldLog()) console.log('DECOMP_REJECT:parse_or_validate_returned_null');
       return null;
     }
 

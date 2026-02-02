@@ -65,6 +65,7 @@ Presence of any always-toxic hazard results in TOXIC regardless of context.
 - Deterministic verdict explanation line (Task 1): single “why” line per verdict from verdictExplanation.ts; no verdict or pipeline changes
 - Data-driven toxic routing: always-toxic keywords, hazard aliases, and additive toxins extracted to toxicRouting.json; lookup code reads from data file instead of hardcoded values
 - Composite schema annotations: foods.json entries annotated with type ("composite") and hazardPresence ("always" or "possible") where applicable
+- Lookup debug logging: LOOKUP_DEBUG_LOGS flag (src/constants/debug.ts) enables SFL:, FOOD_LOOKUP:, DECOMP_* logs in non-dev builds for observability; default off; no verdict or pipeline changes
 
 ## Branch Reality
 - main: earlier deterministic baseline

@@ -275,6 +275,16 @@ No changes to verdict logic, lookup pipeline order, or verdict outcomes. This is
 
 ---
 
+## Lookup Debug Logging Flag (2026-01-23)
+
+Added `LOOKUP_DEBUG_LOGS` in **src/constants/debug.ts** (default `false`) to enable lookup pipeline logs in non-dev builds for debugging and observability.
+
+**src/lib/smartFoodLookup.ts**, **src/lib/foodLookup.ts**, **src/lib/decomposeFood.ts** — Log guards updated: logs emit when `__DEV__` is true OR `LOOKUP_DEBUG_LOGS` is true. Existing prefixes preserved: SFL:, FOOD_LOOKUP:, DECOMP_*.
+
+No changes to verdict logic, lookup pipeline order, or data sources. Logging-only change.
+
+---
+
 ## Summary
 
-The MVP now has: local JSON lookup with priority and sugar-free/xylitol rule; Expo Router layout without backend; Figma-aligned visuals and motion; refined microcopy; OpenRouter/DeepSeek client with timeout and 429 fast-fail; decomposition module with validation and name guard; decomposition, USDA, and result caches; USDA client and ingredient extraction; smart lookup pipeline with USDA + LLM fallback and conservative verdict aggregation; loading guard on submit; local-dataset autocomplete with prefix match and keyboard handling; and local history (last 10 checks) with tap-to-rerun and clear. All caches use 30-day TTL and versioned keys; dev logging is gated by `__DEV__`.
+The MVP now has: local JSON lookup with priority and sugar-free/xylitol rule; Expo Router layout without backend; Figma-aligned visuals and motion; refined microcopy; OpenRouter/DeepSeek client with timeout and 429 fast-fail; decomposition module with validation and name guard; decomposition, USDA, and result caches; USDA client and ingredient extraction; smart lookup pipeline with USDA + LLM fallback and conservative verdict aggregation; loading guard on submit; local-dataset autocomplete with prefix match and keyboard handling; and local history (last 10 checks) with tap-to-rerun and clear. All caches use 30-day TTL and versioned keys; lookup logs gated by `__DEV__` or `LOOKUP_DEBUG_LOGS`.

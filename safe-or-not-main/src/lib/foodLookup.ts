@@ -1,5 +1,6 @@
 import foodsData from '@/src/data/foods.json';
 import Colors from '@/constants/colors';
+import { LOOKUP_DEBUG_LOGS } from '@/src/constants/debug';
 
 type VerdictType = 'SAFE' | 'TOXIC' | 'VET FIRST';
 
@@ -68,7 +69,7 @@ type MatchEntry = {
 };
 
 function logDev(label: string, details?: string) {
-  if (!__DEV__) return;
+  if (!__DEV__ && !LOOKUP_DEBUG_LOGS) return;
   console.log(`FOOD_LOOKUP:${label}${details ? ` ${details}` : ''}`);
 }
 
